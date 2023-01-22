@@ -19,9 +19,14 @@ class HINTS():
 
         a = multivariate_normal.logpdf(xn, self.mu, self.sigma)     # define mu and sigma in init since they wont change for the entire thing? 
         b = multivariate_normal.logpdf(x, self.mu, self.sigma)      
-        alpha = a/b
+        alpha = a-b
         u = np.random.uniform(0,1,1)
         if u <= alpha:
             return xn
         else:
             return x    # do I want to return a new value or new parameter estimates? or am I confusing theta for a parameter when it is infact the data?
+
+
+z=HINTS([1.2345],[0.5])
+
+z.mcmc([1.2345])
