@@ -12,8 +12,8 @@ class HINTS():
         self.sigma=sigma
 
 
-    def mcmc(self, x):                           # q is proposal dist and f is posterior dist (How to incorporate this into sampler, or just leave it as gaussian for now?)
-        dim=len(x)                       # dimension of sample
+    def mcmc(self, x):  # q is proposal dist and f is posterior dist (How to incorporate this into sampler, or just leave it as gaussian for now?)
+        dim=len(x)      # dimension of sample
         xn = np.zeros((dim))                           # set up vector for new sample
         xn = multivariate_normal.rvs(x, np.eye(dim))   # take new sample
 
@@ -24,4 +24,4 @@ class HINTS():
         if u <= alpha:
             return xn
         else:
-            return x
+            return x    # do I want to return a new value or new parameter estimates? or am I confusing theta for a parameter when it is infact the data?
