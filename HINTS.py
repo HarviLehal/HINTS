@@ -16,8 +16,8 @@ class HINTS():
         xn = np.zeros((dim))                           # set up vector for new sample
         xn = multivariate_normal.rvs(x, np.eye(dim))   # take new sample
 
-        a = multivariate_normal.logpdf(xn, self.mu, self.sigma)     # define mu and sigma in init since they wont change for the entire thing? 
-        b = multivariate_normal.logpdf(x, self.mu, self.sigma)      
+        a = multivariate_normal.logpdf(xn, self.mu, self.sigma)     # define mu and sigma in init since they wont change for the entire thing?
+        b = multivariate_normal.logpdf(x, self.mu, self.sigma)
         alpha = a/b
         u = np.random.uniform(0, 1, 1)
         if u <= alpha:
