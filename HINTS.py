@@ -7,13 +7,13 @@ from tqdm import tqdm
 
 class HINTS():
 
-    def __init__(self, mu, sigma, step):
+    def __init__(self, mu, sigma0, step):
         self.mu = mu
-        self.sigma = sigma
-        self.dim = len(sigma)
+        self.sigma0 = sigma0
+        self.dim = len(sigma0)
         self.step = step
 
-    def mcmc(self, x, sigma, sigma_n=None):  # q is proposal dist and f is posterior dist (How to incorporate this into sampler, or just leave it as gaussian for now?)
+    def mcmc_step(self, x, sigma, sigma_n=None):  # q is proposal dist and f is posterior dist (How to incorporate this into sampler, or just leave it as gaussian for now?)
         mu = np.mean(x)
         if sigma_n is not None:
             pass
@@ -32,9 +32,16 @@ class HINTS():
             print("Reject: "+ str(sigma_n))
             return sigma
 
+    def HINTS_node(self, level, parent, theta):
+        # Aim to have a tree of the following form:
+            # [node number, [DATA], parent node number, level]
+            
 
-sigma = np.array([0.5])
+
+
+
+sigma0 = np.array([0.5])
 x = np.array([1, 2, 3, 4, 5, 6])
 mu = np.array([4])
-z = HINTS(mu, sigma, 2)
-z.mcmc(x, sigma)
+z = HINTS(mu, sigma0, 2)
+z.mcmc(x, sigma0)
