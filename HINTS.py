@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import multivariate_normal
 from tqdm import tqdm
-from scipy import stats
-
+from scipy.stats import chi2
+import seaborn as sns
 
 class HINTS():
 
@@ -13,10 +13,10 @@ class HINTS():
         self.dim = len(sigma0)              # Dimension of Problem
 
     def logpdf(self, x, mean, var):
-        # n = len(x)
-        # prec = var**(-1)                                    # Precision
-        # f = np.vstack(x-mean)                               # x - mu vectorised
-        # a = -n*np.log(np.sqrt(var))*(-0.5 * prec*f.T@f)     # logpdf of Gaussian
+        # n = len(x)                                                            # No.of samples
+        # prec = var**(-1)                                                      # Precision
+        # f = np.vstack(x-mean)                                                 # x - mu vectorised
+        # a = -n*np.log(np.sqrt(var))*(-0.5 * prec*f.T@f)                       # logpdf of Gaussian
         a = -0.5 * np.sum((x - mean) ** 2 / var + np.log(2 * np.pi * var))      # lodpdf of Gaussian as defined by ChatGPT which seems to work
         return a
 
@@ -25,7 +25,7 @@ class HINTS():
         if sigma_n is not None:                     # proposal provided (for the union of sets stage of HINTS)
             pass
         else:
-            sigma_n = sigma + np.eye(self.dim)*np.random.normal(size=1)     # a random walk?
+            sigma_n = sigma + np.eye(self.dim)*np.random.normal(size=1)     # is this a random walk?
         a = self.logpdf(x, mu, sigma_n)                                     # logpdf of proposal
         b = self.logpdf(x, mu, sigma)                                       # logpdf of previous
         a = a-b                                                             # Acceptance Ratio
@@ -36,9 +36,12 @@ class HINTS():
         else:
             return sigma                                                    # Reject Proposal
 
+
+
     # def HINTS_node(self, level, parent, theta):
         # Aim to have a tree of the following form:
             # [node number, [DATA], parent node number, level]
+
 
     def mcmc(self, M, x, sigma):                            # Test mcmc sampler?
         self.M = M                                          # Number of iterations
@@ -52,10 +55,14 @@ class HINTS():
     def plot(self):
         plt.plot(self.sigmas)
         plt.show()
+        sns.kdeplot(self.sigmas)
+        plt.show()
 
 
 sigma0 = np.array([4])
-x = multivariate_normal.rvs(0,1,10)
+x = multivariate_normal.rvs(0, 1, 1000)
+x = np.split(x,100)                     # split data into subsets for leaf nodes
+# USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
 z = HINTS(sigma0)
 # z.mcmc_step(x,z.mcmc_step(x, sigma0))
 z.mcmc(10000, x, sigma0)
