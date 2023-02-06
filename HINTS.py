@@ -3,14 +3,14 @@ import numpy as np
 import pandas as pd
 from scipy.stats import multivariate_normal
 from tqdm import tqdm
+from scipy import stats
 
 
 class HINTS():
 
-    def __init__(self, sigma0, step):
+    def __init__(self, sigma0):
         self.sigma0 = sigma0                # Initial Parameter value
         self.dim = len(sigma0)              # Dimension of Problem
-        self.step = step                    # Random walk step size
 
     def mcmc_step(self, x, sigma, sigma_n=None):  # x is the data, sigma is initial parameter
         mu = np.mean(x)         # Mean of Chosen Sample
@@ -20,9 +20,12 @@ class HINTS():
             sigma_n = multivariate_normal.rvs(sigma, np.eye(self.dim)*self.step**2)   # replace with a random walk which adds a value onto the covariance diagonal  (value + random normal/sqrt(sigma^2))
             # sigma_n = sigma + np.eye(self.dim)*np.random.normal(size=1)*self.step        # would this do the above?
         prec_n = sigma_n**(-1)                          # Precision of proposal
-        prec = sigma*(-1)                               # Precision of prior
+        prec = sigma**(-1)                               # Precision of prior
         f = np.vstack(x-mu)                             # x - mu vectorised
-        a = (0.5 * prec_n*f.T@f)-(0.5 * prec*f.T@f)     # Log Acceptance Ratio
+        # a = (0.5 * prec*f.T@f)-(0.5 * prec_n*f.T@f)     # Log Acceptance Ratio THIS IS INCORRECT, BUT WHY!?!?
+        a = np.sum(stats.norm.logpdf(x, loc=mu, scale=sigma_n))
+        b = np.sum(stats.norm.logpdf(x, loc=mu, scale=sigma))
+        a = a-b
         a = np.exp(a)                                   # Exponent
         u = np.random.uniform(0, 1, 1)
         if u <= a:
@@ -52,11 +55,8 @@ class HINTS():
 
 
 sigma0 = np.array([4])
-x = multivariate_normal.rvs(0,1,1000)
-print(x)
-# x = np.array([1,2,3,4,5,6])
-mu = np.array([1])
+x = multivariate_normal.rvs(0,1,10)
 z = HINTS(sigma0, 1)
 # z.mcmc_step(x,z.mcmc_step(x, sigma0))
-z.mcmc(1000, x, sigma0)
+z.mcmc(10000, x, sigma0)
 z.plot()
