@@ -12,51 +12,51 @@ class HINTS():
         self.sigma0 = sigma0                # Initial Parameter value
         self.dim = len(sigma0)              # Dimension of Problem
 
-    def mcmc_step(self, x, sigma, sigma_n=None):  # x is the data, sigma is initial parameter
-        mu = np.mean(x)         # Mean of Chosen Sample
-        if sigma_n is not None: # proposal provided
+    def logpdf(self, x, mean, var):
+        # n = len(x)
+        # prec = var**(-1)                                    # Precision
+        # f = np.vstack(x-mean)                               # x - mu vectorised
+        # a = -n*np.log(np.sqrt(var))*(-0.5 * prec*f.T@f)     # logpdf of Gaussian
+        a = -0.5 * np.sum((x - mean) ** 2 / var + np.log(2 * np.pi * var))      # lodpdf of Gaussian as defined by ChatGPT which seems to work
+        return a
+
+    def mcmc_step(self, x, sigma, sigma_n=None):    # x is the data, sigma is initial parameter
+        mu = np.mean(x)                             # Mean of Chosen Sample
+        if sigma_n is not None:                     # proposal provided (for the union of sets stage of HINTS)
             pass
         else:
-            sigma_n = multivariate_normal.rvs(sigma, np.eye(self.dim)*self.step**2)   # replace with a random walk which adds a value onto the covariance diagonal  (value + random normal/sqrt(sigma^2))
-            # sigma_n = sigma + np.eye(self.dim)*np.random.normal(size=1)*self.step        # would this do the above?
-        prec_n = sigma_n**(-1)                          # Precision of proposal
-        prec = sigma**(-1)                               # Precision of prior
-        f = np.vstack(x-mu)                             # x - mu vectorised
-        # a = (0.5 * prec*f.T@f)-(0.5 * prec_n*f.T@f)     # Log Acceptance Ratio THIS IS INCORRECT, BUT WHY!?!?
-        a = np.sum(stats.norm.logpdf(x, loc=mu, scale=sigma_n))
-        b = np.sum(stats.norm.logpdf(x, loc=mu, scale=sigma))
-        a = a-b
-        a = np.exp(a)                                   # Exponent
+            sigma_n = sigma + np.eye(self.dim)*np.random.normal(size=1)     # a random walk?
+        a = self.logpdf(x, mu, sigma_n)                                     # logpdf of proposal
+        b = self.logpdf(x, mu, sigma)                                       # logpdf of previous
+        a = a-b                                                             # Acceptance Ratio
+        a = np.exp(a)                                                       # Exponent
         u = np.random.uniform(0, 1, 1)
         if u <= a:
-            # print("Accept Proposal: "+ str(sigma_n)+"\n Reject: "+ str(sigma))
-            return sigma_n
+            return sigma_n                                                  # Accept Proposal
         else:
-            # print("Reject Proposal: "+ str(sigma_n)+"\n Accept: "+ str(sigma))
-            return sigma
+            return sigma                                                    # Reject Proposal
 
     # def HINTS_node(self, level, parent, theta):
         # Aim to have a tree of the following form:
             # [node number, [DATA], parent node number, level]
 
-
-    def mcmc(self, M, x, sigma):                                # Test mcmc sampler?
-        sigmas = np.zeros(M)
-        sigmas[0] = sigma
+    def mcmc(self, M, x, sigma):                            # Test mcmc sampler?
+        self.M = M                                          # Number of iterations
+        sigmas = np.zeros((M))                              # Blank array for parameter values
+        sigmas[0] = sigma                                   # Initial parameter value
         for i in range(M-1):
-            sigmas[i+1] = self.mcmc_step(x, sigmas[i])
+            sigmas[i+1] = self.mcmc_step(x, sigmas[i])      # mcmc loop
         self.sigmas = sigmas
-        return self.sigmas
-    
+        return self.sigmas                                  # final array of parameters from mcmc
+
     def plot(self):
         plt.plot(self.sigmas)
         plt.show()
 
 
-
 sigma0 = np.array([4])
 x = multivariate_normal.rvs(0,1,10)
-z = HINTS(sigma0, 1)
+z = HINTS(sigma0)
 # z.mcmc_step(x,z.mcmc_step(x, sigma0))
 z.mcmc(10000, x, sigma0)
 z.plot()
