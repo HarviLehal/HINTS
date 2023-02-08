@@ -5,13 +5,14 @@ from scipy.stats import multivariate_normal
 from tqdm import tqdm
 from scipy.stats import chi2
 import seaborn as sns
-import logpdf
+import target
 
 
 class HINTS():
 
-    def __init__(self, x, theta0):
-        self.theta0 = theta0                # Initial Parameter value
+    def __init__(self, x, dist, proposal):
+        self.target = dist                # target distribution
+        self.proposal = proposal            # proposal style
         self.x = x
         self.dim = len(x[0])
 
@@ -19,17 +20,16 @@ class HINTS():
         if theta_n is not None:                     # proposal provided (for the union of sets stage of HINTS)
             pass
         else:
-            theta_n = theta + np.eye(self.dim)*np.random.normal(size=1)     # is this a random walk?
-        a = logpdf.gaussian(x, *theta_n)                                    # logpdf of proposal
-        theta = [mu, theta]
-        b = logpdf.gaussian(x, *theta)                                      # logpdf of previous
-        a = a-b                                                             # Acceptance Ratio
-        a = np.exp(a)                                                       # Exponent
+            theta_n = self.proposal(theta)          # proposal step
+        a = self.target.logpdf(x, theta_n)          # logpdf of proposal
+        b = self.target.logpdf(x, *theta)           # logpdf of previous
+        a = a-b                                     # Acceptance Ratio
+        a = np.exp(a)                               # Exponent
         u = np.random.uniform(0, 1, 1)
         if u <= a:
-            return theta_n                                                  # Accept Proposal
+            return theta_n                          # Accept Proposal
         else:
-            return theta                                                    # Reject Proposal
+            return theta                            # Reject Proposal
 
     def mcmc(self, M, x, theta):                            # Test mcmc sampler?
         self.M = M                                          # Number of iterations
