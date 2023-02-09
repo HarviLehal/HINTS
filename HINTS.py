@@ -5,24 +5,24 @@ from scipy.stats import multivariate_normal
 from tqdm import tqdm
 from scipy.stats import chi2
 import seaborn as sns
-import target
 
 
 class HINTS():
 
-    def __init__(self, x, dist, proposal):
-        self.target = dist                # target distribution
-        self.proposal = proposal            # proposal style
-        self.x = x
-        self.dim = len(x[0])
+    def __init__(self, x, theta, logpdf, proposal):
+        self.x = x                          # Data
+        self.dim = len(x[0])                # Dimension of Problem
+        self.theta = theta                  # parameters of target
+        self.logpdf = logpdf                # logpdf of target
+        self.proposal = proposal            # proposal method
 
     def mcmc_step(self, x, theta, theta_n=None):    # x is the data, theta is initial parameter
         if theta_n is not None:                     # proposal provided (for the union of sets stage of HINTS)
             pass
         else:
-            theta_n = self.proposal(theta)          # proposal step
-        a = self.target.logpdf(x, theta_n)          # logpdf of proposal
-        b = self.target.logpdf(x, *theta)           # logpdf of previous
+            theta_n = self.proposal(theta, self.dim)          # proposal step
+        a = self.logpdf(x, theta_n)          # logpdf of proposal
+        b = self.logpdf(x, theta)           # logpdf of previous
         a = a-b                                     # Acceptance Ratio
         a = np.exp(a)                               # Exponent
         u = np.random.uniform(0, 1, 1)
@@ -51,11 +51,11 @@ class HINTS():
         # [node number, [DATA], parent node number, level]
 
 
-theta0 = np.array([4])
-x = multivariate_normal.rvs(0, 1, 1000)
-# x = np.split(x,100)                     # split data into subsets for leaf nodes
-# USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
-z = HINTS(theta0)
-# z.mcmc_step(x,z.mcmc_step(x, theta0))
-z.mcmc(10000, theta0)
-z.plot()
+# theta0 = np.array([4])
+# x = multivariate_normal.rvs(0, 1, 1000)
+# # x = np.split(x,100)                     # split data into subsets for leaf nodes
+# # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
+# z = HINTS(theta0)
+# # z.mcmc_step(x,z.mcmc_step(x, theta0))
+# z.mcmc(10000, theta0)
+# z.plot()
