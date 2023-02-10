@@ -9,35 +9,39 @@ import seaborn as sns
 
 class HINTS():
 
-    def __init__(self, x, theta, logpdf, proposal):
+    def __init__(self, x, theta, logpdf, proposal, M):
         self.x = x                          # Data
         self.dim = len(x[0])                # Dimension of Problem
-        self.theta = theta                  # parameters of target
-        self.logpdf = logpdf                # logpdf of target
-        self.proposal = proposal            # proposal method
+        self.theta = theta                  # Parameters of Target
+        self.logpdf = logpdf                # Logpdf of Target
+        self.proposal = proposal            # Proposal Method
+        self.M = M                          # Number of Iterations
 
-    def mcmc_step(self, x, theta, theta_n=None):    # x is the data, theta is initial parameter
-        if theta_n is not None:                     # proposal provided (for the union of sets stage of HINTS)
+    def mcmc_step(self, x, theta, theta_n=None):    # Theta previous parameter, Theta_n proposal parameter
+        if theta_n is not None:                     # Proposal provided (for the Union of sets stage of HINTS)
             pass
         else:
-            theta_n = self.proposal(theta, self.dim)          # proposal step
-        a = self.logpdf(x, theta_n)          # logpdf of proposal
-        b = self.logpdf(x, theta)           # logpdf of previous
-        a = a-b                                     # Acceptance Ratio
-        a = np.exp(a)                               # Exponent
+            theta_n = self.proposal(theta, len(theta))    # proposal step
+        a = self.logpdf(x, *theta_n)                     # logpdf of proposal
+        b = self.logpdf(x, *theta)                       # logpdf of previous
+        a = a-b                                         # Acceptance Ratio
+        a = np.exp(a)                                   # Exponent
         u = np.random.uniform(0, 1, 1)
         if u <= a:
             return theta_n                          # Accept Proposal
         else:
             return theta                            # Reject Proposal
 
-    def mcmc(self, M, x, theta):                            # Test mcmc sampler?
-        self.M = M                                          # Number of iterations
-        thetas = np.zeros((M))                              # Blank array for parameter values
-        thetas[0] = theta                                   # Initial parameter value
-        for i in range(M-1):
-            thetas[i+1] = self.mcmc_step(x, thetas[i])      # mcmc loop
-        self.thetas = thetas
+    def mcmc(self):                            # Test mcmc sampler
+        thetas = {}
+        for i in range(len(self.theta)):
+            thetas[i] = np.zeros((self.M, *self.theta[i].shape))    # Blank array for parameter values
+            thetas[i][0] = self.theta[i]                            # Initial parameter values
+
+        # thetas = np.zeros((self.M, len(self.theta)))               
+            for j in range(self.M-1):
+                thetas[i][j+1] = self.mcmc_step(self.x, thetas[i][j])      # mcmc loop
+        self.thetas = thetas                                # save vector of parameters
         return self.thetas                                  # final array of parameters from mcmc
 
     def plot(self):
@@ -45,17 +49,3 @@ class HINTS():
         plt.show()
         sns.kdeplot(self.thetas)
         plt.show()
-
-    # def HINTS_node(self, level, parent, theta):
-        # Aim to have a tree of the following form:
-        # [node number, [DATA], parent node number, level]
-
-
-# theta0 = np.array([4])
-# x = multivariate_normal.rvs(0, 1, 1000)
-# # x = np.split(x,100)                     # split data into subsets for leaf nodes
-# # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
-# z = HINTS(theta0)
-# # z.mcmc_step(x,z.mcmc_step(x, theta0))
-# z.mcmc(10000, theta0)
-# z.plot()
