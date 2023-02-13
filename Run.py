@@ -29,8 +29,27 @@ class gaussian():
         return a                # logpdf
 
 
-x = multivariate_normal.rvs([0, 1], np.eye(2), 1000)
-y = gaussian(x)
+class poisson():
+
+    def __init__(self, x):
+        self.theta = [np.mean(x, axis=0)]
+
+    def logpdf(self, data, lambda_):
+        if lambda_ <= 0:
+            return -np.inf
+        else:
+            logpdf = 0
+            for i in data:
+                if i < 0:
+                    return -np.inf
+                logpdf += i*np.log(lambda_) - lambda_ - np.log(np.math.factorial(i))
+            return logpdf
+
+
+# x = multivariate_normal.rvs([0, 1], np.eye(2), 1000)
+# y = gaussian(x)
+x = np.random.poisson(10, 1000)
+y = poisson(x)
 # x = np.split(x,100)                     # split data into subsets for leaf nodes
 # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
 z = HINTS.HINTS(x, y.theta, y.logpdf, proposal.propose, 1000)
