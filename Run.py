@@ -8,7 +8,7 @@ import seaborn as sns
 import HINTS
 
 
-class proposal():
+class Proposal():
 
     def propose(theta, dim):
 
@@ -18,21 +18,26 @@ class proposal():
         return theta_n
 
 
-class gaussian():
+class Gaussian():
 
     def __init__(self, x):
-        self.theta = [np.mean(x, axis=0), np.eye(len(x[0]))*np.var(x)]
+        mu = np.mean(x, axis=0)
+        sigma = np.eye(len(x[0]))*np.var(x)
+        self.theta = [mu, sigma]      # [mean, variance]
 
     def logpdf(x, mu, sigma):
-        # a = -0.5 * np.sum((x - mu) ** 2 / sigma + np.log(2 * np.pi * sigma))      # lodpdf of Gaussian as defined by ChatGPT which seems to work
+        # a = -0.5 * np.sum((x - mu) ** 2 / sigma + np.log(2 * np.pi * sigma))  # lodpdf of Gaussian as defined by ChatGPT which seems to work
         a = np.sum(multivariate_normal.logpdf(x, mu, sigma))
         return a                # logpdf
 
 
-class poisson():
+class Poisson():
 
     def __init__(self, x):
-        self.theta = [np.mean(x, axis=0)]
+        mu = np.mean(x, axis=0)
+        mu_list = [mu]
+        self.theta = np.array(mu_list)      # [lambda]
+
 
     def logpdf(self, data, lambda_):
         if lambda_ <= 0:
@@ -46,10 +51,10 @@ class poisson():
             return logpdf
 
 
-# x = multivariate_normal.rvs([0, 1], np.eye(2), 1000)
-# y = gaussian(x)
-x = np.random.poisson(10, 1000)
-y = poisson(x)
+x = multivariate_normal.rvs([0, 1], np.eye(2), 1000)
+y = gaussian(x)
+# x = np.random.poisson(10, 1000)
+# y = poisson(x)
 # x = np.split(x,100)                     # split data into subsets for leaf nodes
 # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
 z = HINTS.HINTS(x, y.theta, y.logpdf, proposal.propose, 1000)

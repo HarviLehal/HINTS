@@ -22,15 +22,9 @@ class HINTS():
             pass
         else:
             theta_n = self.proposal(theta, np.size(theta))    # proposal step
-        print("********INITIAL DATA**********")
-        print(x)
-        print("******************************")
-        print("******INITIAL PARAMETER******")
-        print(theta)
-        print("******************************")
-        print("******PROPOSAL PARAMETER******")
-        print(theta_n)
-        print("******************************")
+
+
+        # split here
         a = self.logpdf(x, theta_n)                     # logpdf of proposal
         b = self.logpdf(x, theta)                       # logpdf of previous
         a = a-b                                         # Acceptance Ratio
