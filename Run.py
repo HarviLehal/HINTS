@@ -11,10 +11,10 @@ import HINTS
 class Proposal():
 
     def propose(theta, dim):
-
-        # theta_n = np.random.multivariate_normal(theta, self.q_cov)
-        # theta_n = theta + np.sqrt(self.q_cov)*np.random.randn()
-        theta_n = theta + np.eye(dim)*np.random.normal(size=1)
+        if dim == 1:
+            theta_n = theta + np.random.normal(size=1)
+        else:
+            theta_n = theta + np.eye(dim)*np.random.normal(size=1)
         return theta_n
 
 
@@ -23,11 +23,11 @@ class Gaussian():
     def __init__(self, x):
         mu = np.mean(x, axis=0)
         sigma = np.eye(len(x[0]))*np.var(x)
-        self.theta = [mu, sigma]      # [mean, variance]
+        self.theta = {0: mu, 1: sigma}      # [0:mean, 1:variance]
 
-    def logpdf(x, mu, sigma):
+    def logpdf(data, mu, sigma):
         # a = -0.5 * np.sum((x - mu) ** 2 / sigma + np.log(2 * np.pi * sigma))  # lodpdf of Gaussian as defined by ChatGPT which seems to work
-        a = np.sum(multivariate_normal.logpdf(x, mu, sigma))
+        a = np.sum(multivariate_normal.logpdf(data, mu, np.absolute(sigma)))
         return a                # logpdf
 
 
@@ -35,11 +35,9 @@ class Poisson():
 
     def __init__(self, x):
         mu = np.mean(x, axis=0)
-        mu_list = [mu]
-        self.theta = np.array(mu_list)      # [lambda]
+        self.theta = {0: mu}      # [lambda]
 
-
-    def logpdf(self, data, lambda_):
+    def logpdf(data, lambda_):
         if lambda_ <= 0:
             return -np.inf
         else:
@@ -51,13 +49,23 @@ class Poisson():
             return logpdf
 
 
-x = multivariate_normal.rvs([0, 1], np.eye(2), 1000)
-y = gaussian(x)
+mu = np.array([0, 1])
+sigma = np.eye(2)*(-1)
+
+
+x = multivariate_normal.rvs(mu, sigma, 1000)
+y = Gaussian(x)
+
+mu0 = np.array([2, 4])
+sigma0 = np.eye(2)*4
+theta0 = {0: mu0, 1: sigma0}
+
+
 # x = np.random.poisson(10, 1000)
 # y = poisson(x)
 # x = np.split(x,100)                     # split data into subsets for leaf nodes
 # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
-z = HINTS.HINTS(x, y.theta, y.logpdf, proposal.propose, 1000)
+z = HINTS.HINTS(x, theta0, Gaussian.logpdf, Proposal.propose, 1000)
 # z.mcmc_step(x,z.mcmc_step(x, theta0))
 z.mcmc()
 z.plot()
