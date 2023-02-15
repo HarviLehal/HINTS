@@ -12,36 +12,31 @@ class Proposal():
 
     def propose(theta, dim):
         if dim == 1:
-            theta_n = theta + np.random.normal(size=1)*10
+            theta_n = theta + np.random.normal(size=1)
         else:
             theta_n = theta + np.eye(dim)*np.random.normal(size=1)
         return theta_n
 
 
-class Poisson():
+class Expon():
 
-    def __init__(self, x):
-        mu = np.mean(x, axis=0)
-        self.theta = {0: mu}      # [lambda]
-
-    def logpdf(data, mean):
-        if mean <= 0:
+    def logpdf(dataset, scale):
+        if scale <= 0:
             return -np.inf
         else:
             logpdf = 0
-            for i in data:
-                if i < 0:
+            for x in dataset:
+                if x < 0:
                     return -np.inf
-                logpdf += i*np.log(mean) - mean - np.log(np.math.factorial(i))
+                logpdf += -np.log(scale) - x/scale
             return logpdf
 
 
-x = np.random.poisson(10, 1000)
-y = Poisson(x)
-theta0 = {0: 15}
+x = ss.expon.rvs(loc=0, scale=1, size=1000)
+theta0 = {0: 3}
 
 
-z = HINTS.HINTS(x, theta0, Poisson.logpdf, Proposal.propose, 100000)
+z = HINTS.HINTS(x, theta0, Expon.logpdf, Proposal.propose, 10000)
 z.mcmc()
 
 

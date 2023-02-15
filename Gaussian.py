@@ -11,7 +11,6 @@ import HINTS
 class Proposal():
 
     def propose(theta, dim):
-        print(dim)
         if dim == 1:
             theta_n = theta + np.random.normal(size=1)*10
         else:
@@ -27,9 +26,8 @@ class Gaussian():
         self.theta = {0: mu, 1: sigma}      # [0:mean, 1:variance]
 
     def logpdf(data, mu, sigma):
-        # a = -0.5 * np.sum((x - mu) ** 2 / sigma + np.log(2 * np.pi * sigma))  # lodpdf of Gaussian as defined by ChatGPT which seems to work
         a = np.sum(multivariate_normal.logpdf(data, mu, np.absolute(sigma)))
-        return a                # logpdf
+        return a                            # logpdf
 
 
 mu = np.array([0, 1])
