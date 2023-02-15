@@ -12,7 +12,7 @@ class Proposal():
 
     def propose(theta, dim):
         if dim == 1:
-            theta_n = theta + np.random.normal(size=1)*10
+            theta_n = theta + np.random.normal(size=1)
         else:
             theta_n = theta + np.eye(dim)*np.random.normal(size=1)
         return theta_n
@@ -36,7 +36,7 @@ sigma = np.eye(2)
 x = multivariate_normal.rvs(mu, sigma, 1000)
 y = Gaussian(x)
 
-mu0 = np.array([2, 4])
+mu0 = np.array([[2, 4]])
 sigma0 = np.eye(2)*4
 theta0 = {0: mu0, 1: sigma0}
 
