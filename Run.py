@@ -12,9 +12,9 @@ class Proposal():
 
     def propose(theta, dim):
         if dim == 1:
-            theta_n = theta + np.random.normal(size=1)
+            theta_n = theta + np.random.normal(size=1)*0.5
         else:
-            theta_n = theta + np.eye(dim)*np.random.normal(size=1)
+            theta_n = theta + np.eye(dim)*np.random.normal(size=1)*0.5
         return theta_n
 
 
@@ -50,7 +50,7 @@ class Poisson():
 
 
 mu = np.array([0, 1])
-sigma = np.eye(2)*(-1)
+sigma = np.eye(2)
 
 
 x = multivariate_normal.rvs(mu, sigma, 1000)
@@ -65,7 +65,18 @@ theta0 = {0: mu0, 1: sigma0}
 # y = poisson(x)
 # x = np.split(x,100)                     # split data into subsets for leaf nodes
 # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
-z = HINTS.HINTS(x, theta0, Gaussian.logpdf, Proposal.propose, 1000)
+z = HINTS.HINTS(x, theta0, Gaussian.logpdf, Proposal.propose, 100000)
 # z.mcmc_step(x,z.mcmc_step(x, theta0))
 z.mcmc()
-z.plot()
+
+mean = []
+for i in range(len(z.thetas)):
+    mean.append(z.thetas[i][0])
+plt.plot(mean)
+plt.show()
+
+variance = []
+for i in range(len(z.thetas)):
+    mean.append(z.thetas[i][1])
+plt.plot(variance)
+plt.show()

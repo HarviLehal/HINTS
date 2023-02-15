@@ -26,9 +26,6 @@ class HINTS():
 
     def ratio(self, x, theta, theta_n):
 
-        print('**************THETA_N**************')
-        print(theta_n)
-        print('***********************************')
         a = self.logpdf(x, *theta_n)                     # logpdf of proposal
         b = self.logpdf(x, *theta)                       # logpdf of previous
         a = a-b                                         # Acceptance Ratio
@@ -52,7 +49,6 @@ class HINTS():
                 p[j] = thetan[j]
             thetas.append(p)   # append parameter values onto the list
         self.thetas = thetas        # save list
-
 
     def plot(self):
         plt.plot(self.thetas)
