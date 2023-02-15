@@ -12,9 +12,9 @@ class Proposal():
 
     def propose(theta, dim):
         if dim == 1:
-            theta_n = theta + np.random.normal(size=1)*0.5
+            theta_n = theta + np.random.normal(size=1)
         else:
-            theta_n = theta + np.eye(dim)*np.random.normal(size=1)*0.5
+            theta_n = theta + np.eye(dim)*np.random.normal(size=1)
         return theta_n
 
 
@@ -50,7 +50,7 @@ class Poisson():
 
 
 mu = np.array([0, 1])
-sigma = np.eye(2)
+sigma = np.eye(2)*0.05
 
 
 x = multivariate_normal.rvs(mu, sigma, 1000)
@@ -77,6 +77,7 @@ plt.show()
 
 variance = []
 for i in range(len(z.thetas)):
-    mean.append(z.thetas[i][1])
+    variance.append(z.thetas[i][1])
+variance = np.sum(variance, axis=1)
 plt.plot(variance)
 plt.show()
