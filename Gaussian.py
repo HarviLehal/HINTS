@@ -6,16 +6,7 @@ from tqdm import tqdm
 import scipy.stats as ss
 import seaborn as sns
 import HINTS
-
-
-class Proposal():
-
-    def propose(theta, dim):
-        if dim == 1:
-            theta_n = theta + np.random.normal(size=1)
-        else:
-            theta_n = theta + np.eye(dim)*np.random.normal(size=1)
-        return theta_n
+import Proposal
 
 
 class Gaussian():
@@ -27,7 +18,7 @@ class Gaussian():
 
     def logpdf(data, mu, sigma):
         a = np.sum(multivariate_normal.logpdf(data, mu, np.absolute(sigma)))
-        return a                            # logpdf
+        return a
 
 
 mu = np.array([0, 1])
@@ -36,7 +27,7 @@ sigma = np.eye(2)
 x = multivariate_normal.rvs(mu, sigma, 1000)
 y = Gaussian(x)
 
-mu0 = np.array([[2, 4]])
+mu0 = np.array([2, 4])
 sigma0 = np.eye(2)*4
 theta0 = {0: mu0, 1: sigma0}
 
@@ -45,7 +36,7 @@ theta0 = {0: mu0, 1: sigma0}
 # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
 
 
-z = HINTS.HINTS(x, theta0, Gaussian.logpdf, Proposal.propose, 100000)
+z = HINTS.HINTS(x, theta0, Gaussian.logpdf, Proposal.Proposal.propose, 100000)
 z.mcmc()
 
 mean = []

@@ -39,7 +39,7 @@ class HINTS():
     def mcmc(self):                            # Test mcmc sampler
         thetas = []     # blank list to save parameters
         thetas.append(self.theta0)  # add initial parameter values
-        for i in range(self.M-1):   # for each iteration:
+        for i in tqdm(range(self.M-1)):   # for each iteration:
             thetan = {} # blank dictionary for the proposal
             for j in range(len(self.theta0)):       # for each parameter:
                 thetan[j] = self.prop(thetas[i][j])     # new proposal for parameter j using latest parameter j value

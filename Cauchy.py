@@ -6,16 +6,7 @@ from tqdm import tqdm
 import scipy.stats as ss
 import seaborn as sns
 import HINTS
-
-
-class Proposal():
-
-    def propose(theta, dim):
-        if dim == 1:
-            theta_n = theta + np.random.normal(size=1)*10
-        else:
-            theta_n = theta + np.eye(dim)*np.random.normal(size=1)*10
-        return theta_n
+import Proposal
 
 
 class Cauchy():
@@ -36,7 +27,7 @@ x = ss.cauchy.rvs(loc=loc, scale=scale, size=100)
 theta0 = {0: 2, 1: 4}
 
 
-z = HINTS.HINTS(x, theta0, Cauchy.logpdf, Proposal.propose, 100000)
+z = HINTS.HINTS(x, theta0, Cauchy.logpdf, Proposal.Proposal.propose, 100000)
 z.mcmc()
 
 loc = []

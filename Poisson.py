@@ -6,16 +6,7 @@ from tqdm import tqdm
 import scipy.stats as ss
 import seaborn as sns
 import HINTS
-
-
-class Proposal():
-
-    def propose(theta, dim):
-        if dim == 1:
-            theta_n = theta + np.random.normal(size=1)*10
-        else:
-            theta_n = theta + np.eye(dim)*np.random.normal(size=1)
-        return theta_n
+import Proposal
 
 
 class Poisson():
@@ -41,7 +32,7 @@ y = Poisson(x)
 theta0 = {0: 15}
 
 
-z = HINTS.HINTS(x, theta0, Poisson.logpdf, Proposal.propose, 100000)
+z = HINTS.HINTS(x, theta0, Poisson.logpdf, Proposal.Proposal.propose, 100000)
 z.mcmc()
 
 

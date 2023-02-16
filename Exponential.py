@@ -6,16 +6,7 @@ from tqdm import tqdm
 import scipy.stats as ss
 import seaborn as sns
 import HINTS
-
-
-class Proposal():
-
-    def propose(theta, dim):
-        if dim == 1:
-            theta_n = theta + np.random.normal(size=1)
-        else:
-            theta_n = theta + np.eye(dim)*np.random.normal(size=1)
-        return theta_n
+import Proposal
 
 
 class Expon():
@@ -36,7 +27,7 @@ x = ss.expon.rvs(loc=0, scale=1, size=1000)
 theta0 = {0: 3}
 
 
-z = HINTS.HINTS(x, theta0, Expon.logpdf, Proposal.propose, 10000)
+z = HINTS.HINTS(x, theta0, Expon.logpdf, Proposal.Proposal.propose, 10000)
 z.mcmc()
 
 
