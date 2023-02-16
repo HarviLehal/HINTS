@@ -27,9 +27,11 @@ class Poisson():
             return logpdf
 
 
-x = np.random.poisson(10, 1000)
+mu = 10
+x = np.random.poisson(mu, 1000)
 y = Poisson(x)
-theta0 = {0: 15}
+mu0 = np.array([15])
+theta0 = {0: mu0}
 
 
 z = HINTS.HINTS(x, theta0, Poisson.logpdf, Proposal.Proposal.propose, 100000)

@@ -24,7 +24,9 @@ class Cauchy():
 loc = 0
 scale = 1
 x = ss.cauchy.rvs(loc=loc, scale=scale, size=100)
-theta0 = {0: 2, 1: 4}
+loc0 = np.array([2])
+scale0 = np.array([4])
+theta0 = {0: loc0, 1: scale0}
 
 
 z = HINTS.HINTS(x, theta0, Cauchy.logpdf, Proposal.Proposal.propose, 100000)

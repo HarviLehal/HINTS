@@ -21,7 +21,7 @@ class HINTS():
         # if theta_n is not None:                     # Proposal provided (for the Union of sets stage of HINTS)
         #     pass
         # else:
-        theta_n = self.proposal(theta, int(np.size(theta)))    # proposal step
+        theta_n = self.proposal(theta, int(theta.ndim))    # proposal step
         return theta_n
 
     def ratio(self, x, theta, theta_n):

@@ -23,8 +23,10 @@ class Expon():
             return logpdf
 
 
-x = ss.expon.rvs(loc=0, scale=1, size=1000)
-theta0 = {0: 3}
+scale = 1
+x = ss.expon.rvs(loc=0, scale=scale, size=1000)
+scale0 = np.array([3])
+theta0 = {0: scale0}
 
 
 z = HINTS.HINTS(x, theta0, Expon.logpdf, Proposal.Proposal.propose, 10000)

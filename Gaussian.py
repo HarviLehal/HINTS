@@ -22,13 +22,13 @@ class Gaussian():
 
 
 mu = np.array([0, 1])
-sigma = np.eye(2)
+sigma = np.eye(2)*2
 
 x = multivariate_normal.rvs(mu, sigma, 1000)
 y = Gaussian(x)
 
 mu0 = np.array([2, 4])
-sigma0 = np.eye(2)*4
+sigma0 = np.eye(2)*6
 theta0 = {0: mu0, 1: sigma0}
 
 
@@ -49,5 +49,5 @@ variance = []
 for i in range(len(z.thetas)):
     variance.append(z.thetas[i][1])
 variance = np.sum(variance, axis=1)
-plt.plot(variance)
+plt.plot(np.absolute(variance))
 plt.show()
