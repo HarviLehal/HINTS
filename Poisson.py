@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import HINTS
-import Proposal
+from HINTS import HINTS
+from Proposal import Proposal
+import math
 
 
 class Poisson():
@@ -14,6 +15,7 @@ class Poisson():
         if mean <= 0:
             return -np.inf
         else:
+            mean = int(mean)     # integer to nearest whole number
             logpdf = 0
             for i in data:
                 if i < 0:
@@ -22,14 +24,14 @@ class Poisson():
             return logpdf
 
 
-mu = 10
+mu = 2
 x = np.random.poisson(mu, 1000)
 y = Poisson(x)
 mu0 = np.array([15])
 theta0 = {0: mu0}
 
 
-z = HINTS.HINTS(x, theta0, Poisson.logpdf, Proposal.Proposal.propose, 100000)
+z = HINTS(x, theta0, Poisson.logpdf, Proposal.propose, 10000)
 z.mcmc()
 
 

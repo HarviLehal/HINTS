@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as ss
-import HINTS
-import Proposal
+from HINTS import HINTS
+from Proposal import Proposal
 
 
 class Cauchy():
@@ -25,7 +25,7 @@ scale0 = np.array([4])
 theta0 = {0: loc0, 1: scale0}
 
 
-z = HINTS.HINTS(x, theta0, Cauchy.logpdf, Proposal.Proposal.propose, 100000)
+z = HINTS(x, theta0, Cauchy.logpdf, Proposal.propose, 10000)
 z.mcmc()
 
 loc = []

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as ss
-import HINTS
-import Proposal
+from HINTS import HINTS
+from Proposal import Proposal
 
 
 class Expon():
@@ -25,7 +25,7 @@ scale0 = np.array([3])
 theta0 = {0: scale0}
 
 
-z = HINTS.HINTS(x, theta0, Expon.logpdf, Proposal.Proposal.propose, 10000)
+z = HINTS(x, theta0, Expon.logpdf, Proposal.propose, 1000)
 z.mcmc()
 
 

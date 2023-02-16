@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import multivariate_normal
-import HINTS
-import Proposal
+from HINTS import HINTS
+from Proposal import Proposal
 
 
 class Gaussian():
@@ -28,11 +28,11 @@ sigma0 = np.eye(3)*10
 theta0 = {0: mu0, 1: sigma0}
 
 
-# x = np.split(x,100)                     # split data into subsets for leaf nodes
+# x = np.split(x,100)               # split data into subsets for leaf nodes
 # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
 
 
-z = HINTS.HINTS(x, theta0, Gaussian.logpdf, Proposal.Proposal.propose, 100000)
+z = HINTS(x, theta0, Gaussian.logpdf, Proposal.propose, 100000)
 z.mcmc()
 
 mean = []
