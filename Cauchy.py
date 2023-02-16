@@ -1,10 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from scipy.stats import multivariate_normal
-from tqdm import tqdm
 import scipy.stats as ss
-import seaborn as sns
 import HINTS
 import Proposal
 

@@ -1,10 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from scipy.stats import multivariate_normal
-from tqdm import tqdm
-import scipy.stats as ss
-import seaborn as sns
 import HINTS
 import Proposal
 
@@ -21,14 +17,14 @@ class Gaussian():
         return a
 
 
-mu = np.array([0, 1])
-sigma = np.eye(2)*2
+mu = np.array([3, 5, 7])
+sigma = np.eye(3)*5
 
 x = multivariate_normal.rvs(mu, sigma, 1000)
 y = Gaussian(x)
 
-mu0 = np.array([2, 4])
-sigma0 = np.eye(2)*6
+mu0 = np.array([2, 4, 6])
+sigma0 = np.eye(3)*10
 theta0 = {0: mu0, 1: sigma0}
 
 
