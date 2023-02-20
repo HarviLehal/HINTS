@@ -7,7 +7,7 @@ class Proposal():
         dim = 1
         try:
             dim = np.shape(theta)[1]
-        except IndexError:
+        except IndexError:              # Added due to 1D arrays having no dimensions in the shape function
             pass
         if dim == 1:
             theta_n = theta + np.random.normal(size=1)

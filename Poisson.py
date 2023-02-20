@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from HINTS import HINTS
 from Proposal import Proposal
-import math
 
 
 class Poisson():
@@ -31,7 +30,7 @@ mu0 = np.array([15])
 theta0 = {0: mu0}
 
 
-z = HINTS(x, theta0, Poisson.logpdf, Proposal.propose, 10000)
+z = HINTS(x, theta0, Poisson.logpdf, Proposal.propose, 1000)
 z.mcmc()
 
 

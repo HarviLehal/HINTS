@@ -10,7 +10,7 @@ class Gaussian():
     def __init__(self, x):
         mu = np.mean(x, axis=0)
         sigma = np.eye(len(x[0]))*np.var(x)
-        self.theta = {0: mu, 1: sigma}      # [0:mean, 1:variance]
+        self.theta = {0: mu, 1: sigma}          # [0:mean, 1:variance]
 
     def logpdf(data, mu, sigma):
         a = np.sum(multivariate_normal.logpdf(data, mu, np.absolute(sigma)))
