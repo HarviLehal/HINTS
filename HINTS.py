@@ -16,16 +16,16 @@ class HINTS():
         self.proposal = proposal            # Proposal Method
         self.M = M                          # Number of Iterations
 
-    def prop(self, theta):    # Theta previous parameter, Theta_n proposal parameter
+    def prop(self, theta):    # Theta previous parameter, Theta_n proposal parameter      
         # if theta_n is not None:                     # Proposal provided (for the Union of sets stage of HINTS)
         #     pass
         # else:
-        dim = 1
-        try:
-            dim = np.shape(theta)[1]
-        except IndexError as e:
-            pass
-        theta_n = self.proposal(theta, dim)    # proposal step
+        # dim = 1
+        # try:
+        #     dim = np.shape(theta)[1]
+        # except IndexError:
+        #     pass
+        theta_n = self.proposal(theta)
         return theta_n
 
     def ratio(self, x, theta, theta_n):

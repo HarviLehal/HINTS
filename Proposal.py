@@ -3,7 +3,12 @@ import numpy as np
 
 class Proposal():
 
-    def propose(theta, dim):
+    def propose(theta):
+        dim = 1
+        try:
+            dim = np.shape(theta)[1]
+        except IndexError:
+            pass
         if dim == 1:
             theta_n = theta + np.random.normal(size=1)
         else:

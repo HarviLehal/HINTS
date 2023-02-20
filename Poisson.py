@@ -24,7 +24,7 @@ class Poisson():
             return logpdf
 
 
-mu = 2
+mu = 5
 x = np.random.poisson(mu, 1000)
 y = Poisson(x)
 mu0 = np.array([15])

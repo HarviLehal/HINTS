@@ -18,13 +18,13 @@ class Gaussian():
 
 
 mu = np.array([3, 5, 7])
-sigma = np.eye(3)*5
+sigma = np.eye(3)
 
-x = multivariate_normal.rvs(mu, sigma, 1000)
+x = multivariate_normal.rvs(mu, sigma, 100)
 y = Gaussian(x)
 
 mu0 = np.array([2, 4, 6])
-sigma0 = np.eye(3)*10
+sigma0 = np.eye(3)*2
 theta0 = {0: mu0, 1: sigma0}
 
 
