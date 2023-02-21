@@ -1,10 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from scipy.stats import multivariate_normal
 from tqdm import tqdm
-from scipy.stats import chi2
-import seaborn as sns
 
 
 class HINTS():
@@ -45,9 +40,3 @@ class HINTS():
                 p[j] = thetan[j]
             thetas.append(p)                                                                # append parameter values onto the list
         self.thetas = thetas                                                                # save list
-
-    def plot(self):
-        plt.plot(self.thetas)
-        plt.show()
-        sns.kdeplot(self.thetas)
-        plt.show()
