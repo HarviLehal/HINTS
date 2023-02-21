@@ -28,15 +28,15 @@ class HINTS():
             return theta                    # Reject Proposal
 
     def mcmc(self):                                                                         # Test mcmc sampler
-        thetas = []                                                                         # blank list to save parameters
-        thetas.append(self.theta0)                                                          # add initial parameter values
+        thetas = []                                                                         # blank list to save param
+        thetas.append(self.theta0)                                                          # add initial param values
         for i in tqdm(range(self.M-1)):                                                     # for each iteration:
-            thetan = {}                                                                     # blank dictionary for the proposal
+            thetan = {}                                                                     # blank dict for the prop
             for j in range(len(self.theta0)):                                               # for each parameter:
-                thetan[j] = self.prop(thetas[i][j])                                         # new proposal for parameter j using latest parameter j value
-            thetan = self.ratio(self.x, list(thetas[i].values()), list(thetan.values()))    # M-H accept-reject step of new values against old values
+                thetan[j] = self.prop(thetas[i][j])                                         # new proposal for param j
+            thetan = self.ratio(self.x, list(thetas[i].values()), list(thetan.values()))    # M-H accept-reject step
             p = {}
             for j in range(len(self.theta0)):                                               # for each parameter:
                 p[j] = thetan[j]
-            thetas.append(p)                                                                # append parameter values onto the list
+            thetas.append(p)                                                                # append param val to list
         self.thetas = thetas                                                                # save list
