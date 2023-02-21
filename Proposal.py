@@ -3,7 +3,7 @@ import numpy as np
 
 class Proposal():
 
-    def propose(theta):
+    def rw(theta):
         dim = 1
         try:
             dim = np.shape(theta)[1]

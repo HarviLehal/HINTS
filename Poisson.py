@@ -30,7 +30,7 @@ mu0 = np.array([15])
 theta0 = {0: mu0}
 
 
-z = HINTS(x, theta0, Poisson.logpdf, Proposal.propose, 1000)
+z = HINTS(x, theta0, Poisson, Proposal.rw, 1000)
 z.mcmc()
 
 

@@ -9,17 +9,14 @@ import seaborn as sns
 
 class HINTS():
 
-    def __init__(self, x, theta0, logpdf, proposal, M):
+    def __init__(self, x, theta0, target, proposal, M):
         self.x = x                          # Data
         self.theta0 = theta0                # Initial Parameter values
-        self.logpdf = logpdf                # Logpdf of Target
+        self.logpdf = target.logpdf                # Logpdf of Target
         self.proposal = proposal            # Proposal Method
         self.M = M                          # Number of Iterations
 
     def prop(self, theta):                  # Theta previous parameter, Theta_n proposal parameter
-        # if theta_n is not None:           # Proposal provided (for the Union of sets stage of HINTS)
-        #     pass
-        # else:
         theta_n = self.proposal(theta)
         return theta_n
 

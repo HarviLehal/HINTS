@@ -25,7 +25,7 @@ scale0 = np.array([3])
 theta0 = {0: scale0}
 
 
-z = HINTS(x, theta0, Expon.logpdf, Proposal.propose, 1000)
+z = HINTS(x, theta0, Expon, Proposal.rw, 1000)
 z.mcmc()
 
 

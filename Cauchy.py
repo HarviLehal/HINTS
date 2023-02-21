@@ -25,7 +25,7 @@ scale0 = np.array([4])
 theta0 = {0: loc0, 1: scale0}
 
 
-z = HINTS(x, theta0, Cauchy.logpdf, Proposal.propose, 10000)
+z = HINTS(x, theta0, Cauchy, Proposal.rw, 10000)
 z.mcmc()
 
 loc = []
