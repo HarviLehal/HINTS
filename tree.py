@@ -31,23 +31,60 @@ args.scenarios = 1 * 2 ** (args.levels * log_branch_factor)
 
 x = np.split(x, args.scenarios)               # split data into subsets for leaf nodes
 
-D = []
+D1 = []
 
-for i in tqdm(range(args.scenarios)):
+for i in range(args.scenarios):
     d = {'node': i, 'data': x[i]}
-    D.append(d)
+    D1.append(d)
 
 args.design[-1]     # terminal leafs per node
 
-z = args.scenarios/args.design[-1]
+z = int(args.scenarios/args.design[-1])
 parent = "parent"
 for i in range(args.scenarios):
-    D[i][parent+str(args.levels)] = args.scenarios + i % z     # every 64th subset has the same parent
-    d = {'node': args.scenarios + (i % z), 'data': np.concatenate((D[int(i%z)]['data'], D[int(i%z)]['data']), axis=0)}
-    D.append(d)
+    D1[i]['parent'] = args.scenarios + i % z     # every 64th subset has the same parent
 
 
-z1 = z/args.design[-2]
+D2 = []
+for i in range(z):
+    w = []
+    for dico in D1:
+        print(dico)
+        if dico['parent'] == args.scenarios + i:
+            w.append(dico['data'])
+    w = np.vstack(w)
+    d = {'node': args.scenarios + i, 'data': w}
+    D2.append(d)
 
-for i in range(args.scenarios):
-    D[i][parent+str(args.levels-1)] = z+args.scenarios + i % z1     # every 64th subset has the same parent
+z1 = int(z/args.design[-2])
+for i in range(z):
+    D2[i]['parent'] = args.scenarios + z + i % z1     # every 64th subset has the same parent
+
+D3 = []
+for i in range(z1):
+    w = []
+    for dico in D2:
+        print(dico)
+        if dico['parent'] == args.scenarios + z + i:
+            w.append(dico['data'])
+    w = np.vstack(w)
+    d = {'node': args.scenarios + z + i, 'data': w}
+    D3.append(d)
+
+z2 = z1/args.design[-3]
+for i in range(z1):
+    D3[i]['parent'] = args.scenarios + z1 + z + i % z2     # every 64th subset has the same parent
+
+
+
+# ATTEMPT AT LOOPING
+D=[]
+for i in range(args.levels):
+   D.append([])
+   for j in range(args.levels**(args.levels-i)):
+        d = {'node': j, 'data': x[j]}
+        D[i].append(d)
+
+    z = int(args.levels**(args.levels-i-1))
+    for j in range(args.levels**(args.levels-i)):
+        D[i][j]['parent'] = args.levels**(args.levels-i) + j % z
