@@ -1,61 +1,42 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from scipy.stats import multivariate_normal
 from tqdm import tqdm
-from scipy.stats import chi2
-import seaborn as sns
-import logpdf
 
 
 class HINTS():
 
-    def __init__(self, x, theta0):
-        self.theta0 = theta0                # Initial Parameter value
-        self.x = x
-        self.dim = len(x[0])
+    def __init__(self, x, theta0, target, proposal, M):
+        self.x = x                          # Data
+        self.theta0 = theta0                # Initial Parameter values
+        self.logpdf = target.logpdf                # Logpdf of Target
+        self.proposal = proposal            # Proposal Method
+        self.M = M                          # Number of Iterations
 
-    def mcmc_step(self, x, theta, theta_n=None):    # x is the data, theta is initial parameter
-        if theta_n is not None:                     # proposal provided (for the union of sets stage of HINTS)
-            pass
-        else:
-            theta_n = theta + np.eye(self.dim)*np.random.normal(size=1)     # is this a random walk?
-        a = logpdf.gaussian(x, *theta_n)                                    # logpdf of proposal
-        theta = [mu, theta]
-        b = logpdf.gaussian(x, *theta)                                      # logpdf of previous
-        a = a-b                                                             # Acceptance Ratio
-        a = np.exp(a)                                                       # Exponent
+    def prop(self, theta):                  # Theta previous parameter, Theta_n proposal parameter
+        theta_n = self.proposal(theta)
+        return theta_n
+
+    def ratio(self, x, theta, theta_n):
+
+        a = self.logpdf(x, *theta_n)        # logpdf of proposal
+        b = self.logpdf(x, *theta)          # logpdf of previous
+        a = a-b                             # Acceptance Ratio
+        a = np.exp(a)                       # Exponent
         u = np.random.uniform(0, 1, 1)
         if u <= a:
-            return theta_n                                                  # Accept Proposal
+            return theta_n                  # Accept Proposal
         else:
-            return theta                                                    # Reject Proposal
+            return theta                    # Reject Proposal
 
-    def mcmc(self, M, x, theta):                            # Test mcmc sampler?
-        self.M = M                                          # Number of iterations
-        thetas = np.zeros((M))                              # Blank array for parameter values
-        thetas[0] = theta                                   # Initial parameter value
-        for i in range(M-1):
-            thetas[i+1] = self.mcmc_step(x, thetas[i])      # mcmc loop
-        self.thetas = thetas
-        return self.thetas                                  # final array of parameters from mcmc
-
-    def plot(self):
-        plt.plot(self.thetas)
-        plt.show()
-        sns.kdeplot(self.thetas)
-        plt.show()
-
-    # def HINTS_node(self, level, parent, theta):
-        # Aim to have a tree of the following form:
-        # [node number, [DATA], parent node number, level]
-
-
-theta0 = np.array([4])
-x = multivariate_normal.rvs(0, 1, 1000)
-# x = np.split(x,100)                     # split data into subsets for leaf nodes
-# USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
-z = HINTS(theta0)
-# z.mcmc_step(x,z.mcmc_step(x, theta0))
-z.mcmc(10000, theta0)
-z.plot()
+    def mcmc(self):                                                                         # Test mcmc sampler
+        thetas = []                                                                         # blank list to save param
+        thetas.append(self.theta0)                                                          # add initial param values
+        for i in tqdm(range(self.M-1)):                                                     # for each iteration:
+            thetan = {}                                                                     # blank dict for the prop
+            for j in range(len(self.theta0)):                                               # for each parameter:
+                thetan[j] = self.prop(thetas[i][j])                                         # new proposal for param j
+            thetan = self.ratio(self.x, list(thetas[i].values()), list(thetan.values()))    # M-H accept-reject step
+            p = {}
+            for j in range(len(self.theta0)):                                               # for each parameter:
+                p[j] = thetan[j]
+            thetas.append(p)                                                                # append param val to list
+        self.thetas = thetas                                                                # save list
