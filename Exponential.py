@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as ss
-from HINTS import HINTS
+from MCMC import MCMC
 from Proposal import Proposal
 
 
@@ -25,7 +25,7 @@ scale0 = np.array([3])
 theta0 = {0: scale0}
 
 
-z = HINTS(x, theta0, Expon, Proposal.rw, 1000)
+z = MCMC(x, theta0, Expon, Proposal.rw, 1000)
 z.mcmc()
 
 

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import multivariate_normal
-from HINTS import HINTS
+from MCMC import MCMC
 from Proposal import Proposal
 
 
@@ -32,7 +32,7 @@ theta0 = {0: mu0, 1: sigma0}
 # USE np.union1d(x[a], x[b], x[c],...) FOR THE HIGHER LEVELS OF THE TREE MAYBE?
 
 
-z = HINTS(x, theta0, Gaussian, Proposal.rw, 100000)
+z = MCMC(x, theta0, Gaussian, Proposal.rw, 100000)
 z.mcmc()
 
 mean = []

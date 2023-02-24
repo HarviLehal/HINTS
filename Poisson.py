@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from HINTS import HINTS
+from MCMC import MCMC
 from Proposal import Proposal
 
 
@@ -30,7 +30,7 @@ mu0 = np.array([15])
 theta0 = {0: mu0}
 
 
-z = HINTS(x, theta0, Poisson, Proposal.rw, 1000)
+z = MCMC(x, theta0, Poisson, Proposal.rw, 1000)
 z.mcmc()
 
 

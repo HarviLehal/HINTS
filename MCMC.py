@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-class HINTS():
+class MCMC():
 
     def __init__(self, x, theta0, target, proposal, M):
         self.x = x                          # Data
