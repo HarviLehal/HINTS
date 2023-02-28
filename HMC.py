@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import multivariate_normal
 import random
-from tree import Tree
+from Tree import Tree
 from MCMC import MCMC
 
 

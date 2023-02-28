@@ -7,9 +7,10 @@ class MCMC():
     def __init__(self, x, theta0, target, proposal, M):
         self.x = x                          # Data
         self.theta0 = theta0                # Initial Parameter values
-        self.logpdf = target.logpdf                # Logpdf of Target
+        self.logpdf = target.logpdf         # Logpdf of Target
         self.proposal = proposal            # Proposal Method
         self.M = M                          # Number of Iterations
+        self.plot = target.plot
 
     def prop(self, theta):                  # Theta previous parameter, Theta_n proposal parameter
         theta_n = self.proposal(theta)
@@ -40,3 +41,4 @@ class MCMC():
                 p[j] = thetan[j]
             thetas.append(p)                                                                # append param val to list
         self.thetas = thetas                                                                # save list
+        self.plot(self.thetas)
