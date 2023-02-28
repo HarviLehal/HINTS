@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats as ss
 from MCMC import MCMC
 from Proposal import Proposal
-import Target
+from Target import *
 
 
 # Cauchy
@@ -14,7 +14,7 @@ loc0 = np.array([2])
 scale0 = np.array([4])
 theta0 = {0: loc0, 1: scale0}                   # Initial Parameters
 
-cau = MCMC(x, theta0, Target.Cauchy, Proposal.rw, 10000)
+cau = MCMC(x, theta0, Cauchy, Proposal.rw, 100000)
 cau.mcmc()
 
 
@@ -25,7 +25,7 @@ x = ss.expon.rvs(loc=0, scale=scale, size=100)
 scale0 = np.array([3])
 theta0 = {0: scale0}                            # Initial Parameter
 
-exp = MCMC(x, theta0, Target.Expon, Proposal.rw, 10000)
+exp = MCMC(x, theta0, Expon, Proposal.rw, 100000)
 exp.mcmc()
 
 
@@ -38,8 +38,7 @@ mu0 = np.array([2, 4, 6])
 sigma0 = np.eye(3)*2
 theta0 = {0: mu0, 1: sigma0}                    # Initial Parameters
 
-
-gau = MCMC(x, theta0, Target.Gaussian, Proposal.rw, 10000)
+gau = MCMC(x, theta0, Gaussian, Proposal.rw, 100000)
 gau.mcmc()
 
 
@@ -49,6 +48,5 @@ x = np.random.poisson(mu, 100)
 mu0 = np.array([15])
 theta0 = {0: mu0}                               # Initial Parameter
 
-
-poi = MCMC(x, theta0, Target.Poisson, Proposal.rw, 10000)
+poi = MCMC(x, theta0, Poisson, Proposal.rw, 100000)
 poi.mcmc()

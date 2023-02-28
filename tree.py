@@ -2,6 +2,7 @@ import numpy as np
 
 
 class Node:
+
     def __init__(self, node_id, data, level=None):
         self.node_id = node_id
         self.data = data
@@ -50,3 +51,10 @@ class Tree:
         D[-1].append(Node(node_id, data, level))
         D = [elem for sublist in D for elem in sublist]
         self.data = D
+
+    def leaf_nodes(self):
+        leaves = []
+        for x in self.data:
+            if x.level == self.levels:
+                leaves.append(x)
+        self.leaves = leaves
