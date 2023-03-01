@@ -4,16 +4,16 @@ from tqdm import tqdm
 
 class MCMC():
 
-    def __init__(self, x, theta0, target, proposal, M):
+    def __init__(self, x, theta0, target, proposal, stepsize):
         self.x = x                          # Data
         self.theta0 = theta0                # Initial Parameter values
         self.logpdf = target.logpdf         # Logpdf of Target
         self.proposal = proposal            # Proposal Method
-        self.M = M                          # Number of Iterations
-        self.plot = target.plot
+        self.stepsize = stepsize            # Stepsize
+        self.plot = target.plot             # Parameter Plotting
 
     def prop(self, theta):                  # Theta previous parameter, Theta_n proposal parameter
-        theta_n = self.proposal(theta)
+        theta_n = self.proposal(theta, self.stepsize)
         return theta_n
 
     def ratio(self, x, theta, theta_n):
@@ -28,10 +28,10 @@ class MCMC():
         else:
             return theta                    # Reject Proposal
 
-    def mcmc(self):                                                                         # Test mcmc sampler
+    def mcmc(self, M):                                                                         # Test mcmc sampler
         thetas = []                                                                         # blank list to save param
         thetas.append(self.theta0)                                                          # add initial param values
-        for i in tqdm(range(self.M-1)):                                                     # for each iteration:
+        for i in tqdm(range(M-1)):                                                     # for each iteration:
             thetan = {}                                                                     # blank dict for the prop
             for j in range(len(self.theta0)):                                               # for each parameter:
                 thetan[j] = self.prop(thetas[i][j])                                         # new proposal for param j
