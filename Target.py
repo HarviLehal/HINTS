@@ -59,11 +59,18 @@ class Gaussian():
         for i in range(len(parameters)):
             mean.append(parameters[i][0])
             variance.append(parameters[i][1])
-        variance = np.sum(variance, axis=1)
+        # variance = np.sum(variance, axis=1)
         plt.plot(mean)
         plt.show()
-        plt.plot(np.absolute(variance))
-        plt.show()
+        def plot_trace(arr_list):
+            n = arr_list[0].shape[0]
+            fig, axs = plt.subplots(n, n, figsize=(10, 10))
+            for i in range(n):
+                for j in range(n):
+                    trace = [arr[i,j] for arr in arr_list]
+                    axs[i, j].plot(trace)
+            plt.show()
+        plot_trace(variance)
 
 
 class Poisson():
