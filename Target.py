@@ -49,6 +49,12 @@ class Expon():
 
 class Gaussian():
 
+    def get_near_spd(A):    # ENSURES COVARIANCE MATRIX IS SYMMETRIC POSITIVE DEFINITE
+        C = (A + A.T)/2
+        eigval, eigvec = np.linalg.eig(C)
+        eigval[eigval < 0] = 0
+        return eigvec.dot(np.diag(eigval)).dot(eigvec.T)
+
     def logpdf(data, mu, sigma):
         logpdf = np.sum(multivariate_normal.logpdf(data, mu, np.absolute(sigma)))
         return logpdf

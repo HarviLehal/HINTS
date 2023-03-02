@@ -33,7 +33,7 @@ class Proposal():
             # Compute eigenvalues and eigenvectors of the matrix
             w, v = np.linalg.eigh(theta)
             # Apply random perturbation to the eigenvalues
-            w_proposed = w + 0.1 * np.random.normal(size=w.shape)
+            w_proposed = w + stepsize * np.random.normal(size=w.shape)
             # Ensure eigenvalues are positive
             w_proposed[w_proposed < 0] = 0
             # Reconstruct the proposed covariance matrix
