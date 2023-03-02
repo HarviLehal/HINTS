@@ -1,6 +1,5 @@
 numpy
 scipy
-random
 tqdm
-scitkit-learn
+scikit-learn
 matplotlib
