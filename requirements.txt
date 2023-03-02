@@ -1,0 +1,6 @@
+numpy
+scipy.stats
+random
+tqdm
+scitkit-learn
+matplotlib
