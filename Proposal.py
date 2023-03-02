@@ -4,7 +4,7 @@ from numpy.linalg import eigvals
 
 class Proposal():
 
-    def rw(theta, stepsize):
+    def rw1(theta, stepsize):
         dim = 1
         try:
             dim = np.shape(theta)[1]
@@ -15,7 +15,6 @@ class Proposal():
         else:
             theta_n = theta + np.eye(dim)*np.random.normal(scale=stepsize, size=1)
         return theta_n
-
 
 # ALTERNATIVE CHATGPT AIDED VERSION????
 
@@ -51,7 +50,6 @@ class Proposal():
 
 # ALTERNATIVE CHATGPT AIDED VERSION WITH 1D CORRECTION?
 
-
     def rw3(theta, stepsize):
         dim = 1
         try:
@@ -59,7 +57,7 @@ class Proposal():
         except IndexError:
             pass
         if dim == 1:
-            theta_n=[]
+            theta_n = []
             for i in theta:
                 theta_n.append(i+np.random.normal(scale=stepsize, size=1))
             theta_n = np.ndarray.flatten(np.array(theta_n))
@@ -84,7 +82,3 @@ class Proposal():
             # Ensure proposed matrix is symmetric
             theta_n = (theta_n + theta_n.T) / 2
         return theta_n
-
-
-
-
