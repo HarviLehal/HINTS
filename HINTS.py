@@ -29,30 +29,6 @@ theta0 = {0: mu0, 1: sigma0}
 # theta0 = {0: mu0, 1: sigma0}
 
 
-# TEST TREE
-
-# tree = Tree(x, 4, 2)
-# tree.build_tree()
-# tree.leaf_nodes()
-# tree.leaves
-
-# leaves = []
-# for x in tree.data:
-#     if x.level == tree.levels:
-#         leaves.append(x)
-
-
-# init_leaf = random.choice(tree.leaves)
-
-# init_leaf_set = []
-# for x in tree.leaves:
-#     if x.parent_id == init_leaf.parent_id:
-#         init_leaf_set.append(x)
-
-# for x in init_leaf_set:
-#     print(x.__dict__)
-
-
 class HINTS():
 
     def __init__(self, x, levels, log_branch_factor, theta0, target, proposal, M, stepsize):
@@ -130,13 +106,5 @@ class HINTS():
 
 
 z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 10000, 0.1)
-a = z.init_leaf_selection()
-b = z.init_leaf_set_node_ids()
-c = z.init_leaf_set_data()
-
-# for i in a:
-#     print(i.__dict__)
-# print(b)
-# print(c)
 
 z.sampler()
