@@ -1,65 +1,6 @@
 import numpy as np
-
-
-# class Node:
-
-#     def __init__(self, node_id, data, level=None):
-#         self.node_id = node_id      # Node ID
-#         self.data = data            # Data
-#         self.level = level          # Level
-
-
-# class Tree:
-#     def __init__(self, x, levels, log_branch_factor):
-#         self.levels = levels                                                                # Number of Levels
-#         self.log_branch_factor = log_branch_factor                                          # Log Branch Factor
-#         self.design = np.array([1] + [2 ** self.log_branch_factor for _ in range(self.levels)])     # Design Matrix
-#         self.scenarios = 1 * 2 ** (self.levels * self.log_branch_factor)                    # Number of Scenarios
-#         self.x = np.split(x, self.scenarios)                                                # Split Data into Scenarios
-
-#     def build_tree(self):
-#         D = []
-#         node = 0
-#         for i in range(self.levels):
-#             if i == 0:
-#                 D.append([])
-#                 for j in range(self.scenarios):
-#                     node_id = node + j
-#                     data = self.x[j]
-#                     D[i].append(Node(node_id, data, self.levels - i))
-#                 z = int(self.scenarios/self.design[-1])
-#                 for j in range(self.scenarios):
-#                     D[i][j].parent_id = self.scenarios + j % z
-#                     D[i][j].level = self.levels - i
-
-#             else:
-#                 D.append([])
-#                 for j in range(self.levels**(self.levels-i)):
-#                     node_id = node + j
-#                     data = self.x[j]
-#                     D[i].append(Node(node_id, data, self.levels - i))
-
-#                 z = int(self.levels**(self.levels-i-1))
-#                 for j in range(self.levels**(self.levels-i)):
-#                     D[i][j].parent_id = node + self.levels**(self.levels-i) + j % z
-#                     D[i][j].level = self.levels - i
-#             node += self.levels**(self.levels-i)
-#         D.append([])
-#         node_id = node
-#         data = self.x
-#         level = 0
-#         D[-1].append(Node(node_id, data, level))
-#         D = [elem for sublist in D for elem in sublist]
-#         self.data = D
-
-#     def leaf_nodes(self):
-#         leaves = [] # List of leaf nodes
-#         for x in self.data: # Iterate through nodes
-#             if x.level == self.levels:  # If node is a leaf node
-#                 leaves.append(x)    # Add leaf node to list
-#         self.leaves = leaves    # Leaf nodes
-
-
+import random
+from scipy.stats import multivariate_normal
 
 class Node:
 
@@ -67,7 +8,8 @@ class Node:
         self.node_id = node_id      # Node ID
         self.data = data            # Data
         self.level = level          # Level
-        self.parent_id = parent_id       # Parent ID
+        self.parent_id = parent_id  # Parent ID
+
 
 class Tree:
     def __init__(self, x, levels, log_branch_factor):
@@ -80,38 +22,115 @@ class Tree:
     def build_tree(self):
         D = []
         node = 0
-        for i in range(self.levels):
-            if i == 0:
-                D.append([])
-                z = int(self.scenarios/self.design[-1])
-                for j in range(self.scenarios):
-                    node_id = node + j
-                    data = self.x[j]
-                    parent_id = self.scenarios + j % z
-                    level = self.levels - i
-                    D[i].append(Node(node_id, data, level, parent_id))
+        level_start = self.scenarios
+        for i in range(self.levels+1):                      # Iterate through levels
+            print("level size: ", level_start)
+            print("!!!!!!N O D E!!!!!!: ", node)
+            if i == 0:                                      # If level is 0
+                print("leaf level")
+                D.append([])                                # Append empty list
+                z = int(2**(self.log_branch_factor*(self.levels-i-1)))                     # Number of nodes in level
+                print(z)
+                for j in range(self.scenarios):             # Iterate through nodes
+                    
+                    print("***************")
+                    node_id = node                          # Node ID
+                    print("node_id: ", node_id)
+                    data = self.x[j]                        # Data
+                    parent_id = self.scenarios + j % z      # Parent ID
+                    print("parent_id: ", parent_id)
+                    level = self.levels                     # Level
+                    print("level: ", level)
+                    D[i].append(Node(node_id, data, level, parent_id))  # Append Node
+                    node += 1                               # Increment node
+
+            elif i == self.levels:                          # If level is last level
+                print("root level")
+                D.append([])                                # Append empty list
+                print("***************")
+                node_id = node                      # Node ID
+                print("node_id: ", node_id)
+                data = self.x                        # Data
+                parent_id = None                        # Parent ID
+                print("parent_id: ", parent_id)
+                level = 0                               # Level
+                print("level: ", level)
+                D[i].append(Node(node_id, data, level, parent_id))  # Append Node
+                node += 1                               # Increment node
 
             else:
+                print("intermediate level")
                 D.append([])
-                z = int(self.levels**(self.levels-i-1))
-                for j in range(self.levels**(self.levels-i)):
-                    node_id = node + j
-                    data = self.x[j]
-                    parent_id = node + self.levels**(self.levels-i) + j % z
-                    level = self.levels - i
-                    D[i].append(Node(node_id, data, level, parent_id))
-            node += self.levels**(self.levels-i)
-        D.append([])
-        node_id = node
-        data = self.x
-        level = 0
-        D[-1].append(Node(node_id, data, level))
-        D = [elem for sublist in D for elem in sublist]
-        self.data = D
-
-    def leaf_nodes(self):
-        leaves = [] # List of leaf nodes
-        for x in self.data: # Iterate through nodes
+                z = int(2**(self.log_branch_factor*(self.levels-i-1)))                     # Number of nodes in level
+                print(z)
+                for j in range(2**(self.log_branch_factor*(self.levels-i))):                             # Iterate through nodes
+                    print("***************")
+                    node_id = node                                      # Node ID
+                    print("node_id: ", node_id)
+                    data = self.x[j]                                        # Data
+                    parent_id = level_start + j % z  # Parent ID
+                    print("parent_id: ", parent_id)
+                    level = self.levels - i                                 # Level
+                    print("level: ", level)
+                    D[i].append(Node(node_id, data, level, parent_id))      # Append Node
+                    node += 1                                               # Increment node
+                    
+            level_start = node + 2**(self.log_branch_factor*(self.levels-i-1))                     # Number of nodes in level
+        D = [elem for sublist in D for elem in sublist]                     # Flatten list
+        self.data_tree = D                                                  # Data Tree
+        leaves = []                     # List of leaf nodes
+        for x in self.data_tree:             # Iterate through nodes
             if x.level == self.levels:  # If node is a leaf node
-                leaves.append(x)    # Add leaf node to list
-        self.leaves = leaves    # Leaf nodes
+                leaves.append(x)        # Add leaf node to list
+        self.leaves = leaves            # Leaf nodes
+
+    def get_node(self, node_id):
+        for x in self.data_tree:
+            if x.node_id == node_id:
+                return x
+
+    def rand_leaf_selection(self):              # Random Leaf Selection
+        rand_leaf = random.choice(self.leaves)
+        return rand_leaf
+
+    def level_set(self, level):                 # Level Set
+        level_set = []
+        for x in self.data_tree:
+            if x.level == level:
+                level_set.append(x)
+        return level_set
+
+    def common_parent(self, node):        # Common Parent Node Set
+        common_parent_set = []
+        level_set = self.level_set(node.level)  # Level Set
+        for x in level_set:
+            if x.parent_id == node.parent_id:
+                common_parent_set.append(x)
+        return common_parent_set
+
+    def parent(self, node):
+        level_set = self.level_set(node.level - 1)  # Level Set
+        for x in level_set:           # ADD SOMETHING TO FACTOR LEVELS IN
+            if x.node_id == node.parent_id:
+                return x
+
+
+    def path(self, node):
+        path = []
+        print(node.level)
+        print(node.__dict__)
+        level = node.level
+        print(level)
+        while level != 0:
+            node = self.parent(node)
+            path.append(node)
+            level = node.level
+        return path
+
+
+x = multivariate_normal.rvs(0, 1, 1024)
+tree = Tree(x, 5, 2)
+tree.build_tree()
+z=[]
+for i in tree.data_tree:
+    z.append(i.__dict__)

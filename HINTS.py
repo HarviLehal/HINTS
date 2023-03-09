@@ -13,9 +13,9 @@ from tqdm import tqdm
 mu = np.array([2, 4, 6])
 sigma = np.eye(3)
 
-x = multivariate_normal.rvs(mu, sigma, 1024)
+x = multivariate_normal.rvs(mu, sigma, 1024000)
 
-mu0 = np.array([8, 16, 22])
+mu0 = np.array([3, 5, 7])
 sigma0 = np.eye(3)*2
 theta0 = {0: mu0, 1: sigma0}
 
@@ -61,8 +61,12 @@ class HINTS():
         a = np.exp(a)                       # Exponent
         u = np.random.uniform(0, 1, 1)
         if u <= a:
+            # print("ACCEPTED")
+            # print("theta_n: ", theta_n)
             return theta_n                  # Accept Proposal
         else:
+            # print("REJECTED")
+            # print("theta: ", theta)
             return theta                    # Reject Proposal
 
     def rand_leaf_selection(self):              # Random Leaf Selection
@@ -107,6 +111,7 @@ class HINTS():
     def sampler(self):
         thetas = [[] for i in range(self.levels+1)]               # Initialise theta level list
         total = []
+        propo = []
         total.append(self.theta0)
         thetas[self.levels].append(self.theta0)                           # Append initial theta
         for iter in tqdm(range(self.M-1)):                      # HINTS Iterations
@@ -121,10 +126,15 @@ class HINTS():
                     thetan = {}
                     for j in range(len(self.theta0)):               # Iterate through parameters
                         thetan[j] = self.prop(thetas[level][iter+index][j])  # Propose new parameter
+                    p = {}
+                    for j in range(len(self.theta0)):
+                        p[j] = thetan[j]                # Append new theta
+                    thetas[level].append(p)                         # Append new theta
+                    propo.append(p)
                     thetan = self.ratio(node.data, list(thetas[level][iter+index].values()), list(thetan.values()))  # Acceptance Ratio
                     p = {}
                     for j in range(len(self.theta0)):
-                        p[j] = thetan[j]
+                        p[j] = thetan[j]                # Append new theta
                     thetas[level].append(p)                         # Append new theta
                     total.append(p)
                 parent = self.parent(common_parent_set[0])                     # Parent Node
@@ -137,14 +147,16 @@ class HINTS():
         self.thetas = thetas
         self.total = total
         self.plot(self.total)
+        self.propo = propo
+        self.plot(self.propo)
         # for i in range(len(self.thetas)):
         #     self.plot(self.thetas[i])
 
 
-z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 1000, 0.1)
+# z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 1000, 0.1)
 
-z.sampler()
+# z.sampler()
 
 
 z2 = MCMC(x, theta0, Gaussian, Proposal.rw3, 0.1)
-z2.mcmc(1000)
+z2.mcmc(500)
