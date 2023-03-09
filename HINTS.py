@@ -8,35 +8,14 @@ from Proposal import Proposal
 from sklearn.datasets import make_spd_matrix
 from tqdm import tqdm
 
-# TEST DATA SET
-
-mu = np.array([2, 4, 6])
-sigma = np.eye(3)
-
-x = multivariate_normal.rvs(mu, sigma, 1024000)
-
-mu0 = np.array([3, 5, 7])
-sigma0 = np.eye(3)*2
-theta0 = {0: mu0, 1: sigma0}
-
-# WHACKY TEST DATA SET
-
-# mu = np.array([3, 5, 7, 9])                                                                 # Sampling Mean
-# sigma = make_spd_matrix(n_dim=4) * 10
-# x = multivariate_normal.rvs(mu, sigma, 10240)
-# mu0 = np.array([4, 8, 12, 16])
-# sigma0 = make_spd_matrix(n_dim=4) * 10
-# theta0 = {0: mu0, 1: sigma0}
-
-
 class HINTS():
 
     def __init__(self, x, levels, log_branch_factor, theta0, target, proposal, M, stepsize):
         tree = Tree(x, levels, log_branch_factor)   # Tree Object
         tree.build_tree()                           # Build Tree
         self.target = target                        # Target Distribution
-        tree.leaf_nodes()                           # Leaf Nodes
-        self.tree_structure = tree.data             # Data tree structure
+        # tree.leaf_nodes()                           # Leaf Nodes
+        self.tree_structure = tree.data_tree             # Data tree structure
         self.leaves = tree.leaves                   # Data tree leaf nodes
         self.theta0 = theta0                        # Initial Parameter values
         self.logpdf = target.logpdf                 # Logpdf of Target
@@ -147,16 +126,37 @@ class HINTS():
         self.thetas = thetas
         self.total = total
         self.plot(self.total)
-        self.propo = propo
-        self.plot(self.propo)
+        # self.propo = propo
+        # self.plot(self.propo)
         # for i in range(len(self.thetas)):
         #     self.plot(self.thetas[i])
 
 
-# z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 1000, 0.1)
+# TEST DATA SET
 
-# z.sampler()
+mu = np.array([2, 4, 6])
+sigma = np.eye(3)
+
+x = multivariate_normal.rvs(mu, sigma, 10240)
+
+mu0 = np.array([3, 5, 7])
+sigma0 = np.eye(3)*2
+theta0 = {0: mu0, 1: sigma0}
+
+# WHACKY TEST DATA SET
+
+# mu = np.array([3, 5, 7, 9])                                                                 # Sampling Mean
+# sigma = make_spd_matrix(n_dim=4) * 10
+# x = multivariate_normal.rvs(mu, sigma, 10240)
+# mu0 = np.array([4, 8, 12, 16])
+# sigma0 = make_spd_matrix(n_dim=4) * 10
+# theta0 = {0: mu0, 1: sigma0}
 
 
-z2 = MCMC(x, theta0, Gaussian, Proposal.rw3, 0.1)
-z2.mcmc(500)
+z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 10000, 0.1)
+
+z.sampler()
+
+
+# z2 = MCMC(x, theta0, Gaussian, Proposal.rw3, 0.1)
+# z2.mcmc(500)

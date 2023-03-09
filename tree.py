@@ -4,7 +4,7 @@ from scipy.stats import multivariate_normal
 
 class Node:
 
-    def __init__(self, node_id, data, level=None, parent_id=None):
+    def __init__(self, node_id, data=None, level=None, parent_id=None):
         self.node_id = node_id      # Node ID
         self.data = data            # Data
         self.level = level          # Level
@@ -55,7 +55,7 @@ class Tree:
                 print("parent_id: ", parent_id)
                 level = 0                               # Level
                 print("level: ", level)
-                D[i].append(Node(node_id, data, level, parent_id))  # Append Node
+                D[i].append(Node(node_id = node_id, level = level,parent_id = parent_id))  # Append Node
                 node += 1                               # Increment node
 
             else:
@@ -72,7 +72,7 @@ class Tree:
                     print("parent_id: ", parent_id)
                     level = self.levels - i                                 # Level
                     print("level: ", level)
-                    D[i].append(Node(node_id, data, level, parent_id))      # Append Node
+                    D[i].append(Node(node_id=node_id, level=level, parent_id=parent_id))      # Append Node
                     node += 1                                               # Increment node
                     
             level_start = node + 2**(self.log_branch_factor*(self.levels-i-1))                     # Number of nodes in level
@@ -82,6 +82,9 @@ class Tree:
         for x in self.data_tree:             # Iterate through nodes
             if x.level == self.levels:  # If node is a leaf node
                 leaves.append(x)        # Add leaf node to list
+        for i in self.data_tree:
+            if i.data is None:
+                i.data = self.data_merge(self.child(i))
         self.leaves = leaves            # Leaf nodes
 
     def get_node(self, node_id):
@@ -114,6 +117,13 @@ class Tree:
             if x.node_id == node.parent_id:
                 return x
 
+    def data_merge(self, node_set):
+        merge_set=[]
+        for i in node_set:
+            merge_set.append(i.data)
+        merge_set = np.array(merge_set)
+        merge_set = np.squeeze(merge_set)
+        return merge_set
 
     def path(self, node):
         path = []
@@ -127,6 +137,13 @@ class Tree:
             level = node.level
         return path
 
+    def child(self, node):
+        child_set = []
+        level_set = self.level_set(node.level + 1)  # Level Set
+        for x in level_set:           # ADD SOMETHING TO FACTOR LEVELS IN
+            if x.parent_id == node.node_id:
+                child_set.append(x)
+        return child_set
 
 x = multivariate_normal.rvs(0, 1, 1024)
 tree = Tree(x, 5, 2)
