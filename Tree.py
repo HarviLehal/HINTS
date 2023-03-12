@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from scipy.stats import multivariate_normal
+import itertools
 
 '''
 I am trying to create a tree data structure in Python. I have a class called Node that has the following attributes:
@@ -132,8 +133,8 @@ class Tree:
         merge_set = []                          # Merge Set
         for i in node_set:                      # Iterate through nodes
             merge_set.append(i.data)            # Add data to merge set
+        merge_set = list(itertools.chain.from_iterable(merge_set)) # Flatten list
         merge_set = np.array(merge_set)         # Convert to array
-        merge_set = np.squeeze(merge_set)       # Squeeze array
         return merge_set                        # Return merged data
 
     def child(self, node):                          # Child Node Set

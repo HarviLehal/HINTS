@@ -72,8 +72,12 @@ class HINTS():
                     thetas.append(p)                                        # Append new theta
                     theta_level[level].append(p)
                 parent = self.tree.parent(common_parent_set[0])             # Parent Node
+                if parent is not None:
+                    thetan = self.ratio(parent.data, list(thetas[-1].values()), list(thetas[-len(common_parent_set)].values()))  # Acceptance Ratio
+                else:
+                    pass
         self.thetas = thetas
-        # self.plot(thetas)
+        self.plot(thetas)
         self.theta_level = theta_level
         # for i in range(len(theta_level)):
         #     self.plot(theta_level[i])
@@ -109,40 +113,3 @@ class HINTS():
         for x in level_set:           # ADD SOMETHING TO FACTOR LEVELS IN
             if x.node_id == node.parent_id:
                 return x
-
-
-
-
-
-# TEST DATA SET
-
-mu = np.array([2, 4, 6])
-sigma = np.eye(3)
-
-x = multivariate_normal.rvs(mu, sigma, 20480)
-
-mu0 = np.array([5, 7, 9])
-sigma0 = np.eye(3)*2
-theta0 = {0: mu0, 1: sigma0}
-
-# WHACKY TEST DATA SET
-
-# mu = np.array([3, 5, 7, 9])                                                                 # Sampling Mean
-# sigma = make_spd_matrix(n_dim=4) * 10
-# x = multivariate_normal.rvs(mu, sigma, 1024)
-# mu0 = np.array([4, 8, 12, 16])
-# sigma0 = make_spd_matrix(n_dim=4) * 20
-# theta0 = {0: mu0, 1: sigma0}
-
-z = HINTS(x, 3, 2, theta0, Gaussian, Proposal.rw3, 500, 0.01)
-z.sampler()
-
-z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 500, 0.01)
-z.sampler()
-
-z = HINTS(x, 5, 2, theta0, Gaussian, Proposal.rw3, 500, 0.01)
-z.sampler()
-
-
-z2 = MCMC(x, theta0, Gaussian, Proposal.rw3, 0.01)
-z2.mcmc(2000)
