@@ -1,7 +1,6 @@
 import numpy as np
 import random
 from scipy.stats import multivariate_normal
-from tqdm import tqdm
 
 '''
 I am trying to create a tree data structure in Python. I have a class called Node that has the following attributes:
@@ -55,7 +54,7 @@ class Tree:
         D = []
         node = 0
         level_start = self.scenarios
-        for i in tqdm(range(self.levels+1)):                                            # Iterate through levels
+        for i in range(self.levels+1):                                            # Iterate through levels
             if i == 0:                                                                  # If level is 0
                 D.append([])                                                            # Append empty list
                 z = int(2**(self.log_branch_factor*(self.levels-i-1)))                  # Number of nodes in level

@@ -33,7 +33,6 @@ class HINTS():
         return theta_n
 
     def ratio(self, x, theta, theta_n):
-
         a = self.logpdf(x, *theta_n)        # logpdf of proposal
         b = self.logpdf(x, *theta)          # logpdf of previous
         a = a-b                             # Acceptance Ratio
@@ -48,71 +47,38 @@ class HINTS():
             # print("theta: ", theta)
             return theta                    # Reject Proposal
 
-    def sampler2(self):
-        thetas = [[] for i in range(self.levels+1)]                 # Initialise theta level list
-        total = []
-        propo = []
-        total.append(self.theta0)
-        thetas[self.levels].append(self.theta0)                     # Append initial theta
-        for iter in tqdm(range(self.M-1)):                          # HINTS Iterations
-            init_leaf = self.tree.rand_leaf_selection()             # Random Leaf Selection
+    def sampler(self):
+        thetas = []                                                         # Initialise theta parameter list
+        theta_level = [[] for i in range(self.levels+1)]
+        theta_level[self.levels].append(self.theta0)
+        thetas.append(self.theta0)                                          # Append initial theta
+        for iter in tqdm(range(self.M-1)):                                  # HINTS Iterations
+            init_leaf = self.tree.rand_leaf_selection()                     # Random Leaf Selection
             parent = self.tree.parent(init_leaf)
-            for level in reversed(range(1, self.levels+1)):         # Iterate through levels
-                if level == self.levels:                             # If level is lowest
-                    common_parent_set = self.tree.common_parent(init_leaf)  # Common Parent Set
+            for level in reversed(range(0, self.levels+1)):                 # Iterate through levels
+                if level == self.levels:                                    # If level is lowest
+                    common_parent_set = self.tree.common_parent(init_leaf)  # Common Parent Set of initial leaf
                 else:
-                    common_parent_set = self.tree.common_parent(parent)
+                    common_parent_set = self.tree.common_parent(parent)     # Common Parent Set of next level
 
-                for index, node in enumerate(common_parent_set):
+                for index, node in enumerate(common_parent_set):            # Iterate through common parent set
                     thetan = {}
-                    for j in range(len(self.theta0)):
-                        thetan[j] = self.prop(thetas[level][iter+index][j])
+                    for j in range(len(self.theta0)):                       # Iterate through parameters
+                        thetan[j] = self.prop(thetas[-1][j])                # Propose new parameter
+                    thetan = self.ratio(node.data, list(thetas[-1].values()), list(thetan.values()))  # Acceptance Ratio
+                    p = {}
+                    for j in range(len(self.theta0)):                       # Iterate through parameters
+                        p[j] = thetan[j]                                    # Append new theta
+                    thetas.append(p)                                        # Append new theta
+                    theta_level[level].append(p)
+                parent = self.tree.parent(common_parent_set[0])             # Parent Node
+        self.thetas = thetas
+        # self.plot(thetas)
+        self.theta_level = theta_level
+        # for i in range(len(theta_level)):
+        #     self.plot(theta_level[i])
+        self.plot(theta_level[0])
 
-
-    # def sampler(self):
-    #     thetas = [[] for i in range(self.levels+1)]               # Initialise theta level list
-    #     total = []
-    #     propo = []
-    #     total.append(self.theta0)
-    #     thetas[self.levels].append(self.theta0)                           # Append initial theta
-    #     for iter in tqdm(range(self.M-1)):                      # HINTS Iterations
-    #         init_leaf = self.rand_leaf_selection()                # Random Leaf Selection
-    #         parent = self.parent(init_leaf)
-    #         for level in reversed(range(1, self.levels+1)):                    # Iterate through levels   (DONT FORGET TO DO self.levels - level so it starts at the bottom))
-    #             if level == self.levels:                # If level is lowest
-    #                 common_parent_set = self.common_parent(init_leaf)  # Common Parent Set
-    #             else:
-    #                 common_parent_set = self.common_parent(parent)  # Common Parent Set
-    #             for index, node in enumerate(common_parent_set):                      # Iterate through common parent set
-    #                 thetan = {}
-    #                 for j in range(len(self.theta0)):               # Iterate through parameters
-    #                     thetan[j] = self.prop(thetas[level][iter+index][j])  # Propose new parameter
-    #                 p = {}
-    #                 for j in range(len(self.theta0)):
-    #                     p[j] = thetan[j]                # Append new theta
-    #                 thetas[level].append(p)                         # Append new theta
-    #                 propo.append(p)
-    #                 thetan = self.ratio(node.data, list(thetas[level][iter+index].values()), list(thetan.values()))  # Acceptance Ratio
-    #                 p = {}
-    #                 for j in range(len(self.theta0)):
-    #                     p[j] = thetan[j]                # Append new theta
-    #                 thetas[level].append(p)                         # Append new theta
-    #                 total.append(p)
-    #             parent = self.parent(common_parent_set[0])                     # Parent Node
-    #             thetan = self.ratio(parent.data, list(thetas[level][iter].values()), list(thetas[level][iter+len(common_parent_set)].values()))  # Acceptance Ratio
-    #             p = {}
-    #             for j in range(len(self.theta0)):
-    #                 p[j] = thetan[j]
-    #             thetas[level-1].append(p)
-    #             total.append(p)
-    #     self.thetas = thetas
-    #     self.total = total
-    #     self.plot(self.total)
-
-
-
-
-    
     def rand_leaf_selection(self):              # Random Leaf Selection
         rand_leaf = random.choice(self.leaves)
         return rand_leaf
@@ -153,9 +119,9 @@ class HINTS():
 mu = np.array([2, 4, 6])
 sigma = np.eye(3)
 
-x = multivariate_normal.rvs(mu, sigma, 10240)
+x = multivariate_normal.rvs(mu, sigma, 20480)
 
-mu0 = np.array([2, 4, 6])
+mu0 = np.array([5, 7, 9])
 sigma0 = np.eye(3)*2
 theta0 = {0: mu0, 1: sigma0}
 
@@ -163,16 +129,20 @@ theta0 = {0: mu0, 1: sigma0}
 
 # mu = np.array([3, 5, 7, 9])                                                                 # Sampling Mean
 # sigma = make_spd_matrix(n_dim=4) * 10
-# x = multivariate_normal.rvs(mu, sigma, 10240)
+# x = multivariate_normal.rvs(mu, sigma, 1024)
 # mu0 = np.array([4, 8, 12, 16])
-# sigma0 = make_spd_matrix(n_dim=4) * 10
+# sigma0 = make_spd_matrix(n_dim=4) * 20
 # theta0 = {0: mu0, 1: sigma0}
 
+z = HINTS(x, 3, 2, theta0, Gaussian, Proposal.rw3, 500, 0.01)
+z.sampler()
 
-z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 1000, 0.1)
+z = HINTS(x, 4, 2, theta0, Gaussian, Proposal.rw3, 500, 0.01)
+z.sampler()
 
+z = HINTS(x, 5, 2, theta0, Gaussian, Proposal.rw3, 500, 0.01)
 z.sampler()
 
 
-z2 = MCMC(x, theta0, Gaussian, Proposal.rw3, 0.1)
-z2.mcmc(500)
+z2 = MCMC(x, theta0, Gaussian, Proposal.rw3, 0.01)
+z2.mcmc(2000)

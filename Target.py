@@ -56,7 +56,7 @@ class Gaussian():
         return eigvec.dot(np.diag(eigval)).dot(eigvec.T)
 
     def logpdf(data, mu, sigma):
-        logpdf = np.sum(multivariate_normal.logpdf(data, mu, np.absolute(sigma)))
+        logpdf = np.sum(multivariate_normal.logpdf(data, mu, sigma))
         return logpdf
 
     def plot(parameters):
