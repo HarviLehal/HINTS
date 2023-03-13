@@ -21,10 +21,10 @@ class Cauchy():
             loc.append(parameters[i][0])
             scale.append(parameters[i][1])
         plt.plot(loc)
-        plt.title('Cauchy Location Parameter')
+        plt.title('Trace of Cauchy Location Parameter')
         plt.show()
         plt.plot(scale)
-        plt.title('Cauchy Scale Parameter')
+        plt.title('Trace of Cauchy Scale Parameter')
         plt.show()
 
 
@@ -46,7 +46,7 @@ class Expon():
         for i in range(len(parameters)):
             mean.append(parameters[i][0])
         plt.plot(mean)
-        plt.title('Exponential Mean Parameter')
+        plt.title('Trace of Exponential Mean Parameter')
         plt.show()
 
 
@@ -70,8 +70,9 @@ class Gaussian():
             variance.append(parameters[i][1])
         # variance = np.sum(variance, axis=1)
         plt.plot(mean)
-        plt.title('Gaussian Mean Parameter')
+        plt.title('Trace of Gaussian Mean Parameter')
         plt.show()
+
         def plot_trace(arr_list):
             n = arr_list[0].shape[0]
             fig, axs = plt.subplots(n, n, figsize=(10, 10))
@@ -79,8 +80,7 @@ class Gaussian():
                 for j in range(n):
                     trace = [arr[i,j] for arr in arr_list]
                     axs[i, j].plot(trace)
-            
-            plt.title('Gaussian Covariance Parameter')
+            fig.suptitle('Trace of Covariance Matrix')
             plt.show()
         plot_trace(variance)
 
@@ -104,5 +104,5 @@ class Poisson():
         for i in range(len(parameters)):
             mean.append(parameters[i][0])
         plt.plot(mean)
-        plt.title('Poisson Mean Parameter')
+        plt.title('Trace of Poisson Mean Parameter')
         plt.show()

@@ -1,11 +1,6 @@
 import numpy as np
-from scipy.stats import multivariate_normal
 import random
 from Tree import Tree
-from MCMC import MCMC
-from Target import *
-from Proposal import Proposal
-from sklearn.datasets import make_spd_matrix
 from tqdm import tqdm
 
 
@@ -47,6 +42,52 @@ class HINTS():
             # print("theta: ", theta)
             return theta                    # Reject Proposal
 
+    def ratio_test(self, x, theta, theta_n):
+        a = self.logpdf(x, *theta_n)        # logpdf of proposal
+        b = self.logpdf(x, *theta)          # logpdf of previous
+        a = a-b                             # Acceptance Ratio
+        a = np.exp(a)                       # Exponent
+        u = np.random.uniform(0, 1, 1)
+        if u <= a:
+            return 1                    # Accept Proposal
+        else:
+            # print("REJECTED")
+            # print("theta: ", theta)
+            return 0                    # Reject Proposal
+
+    def rand_leaf_selection(self):              # Random Leaf Selection
+        rand_leaf = random.choice(self.leaves)
+        return rand_leaf
+
+    def level_set(self, level):                 # Level Set
+        level_set = []
+        for x in self.tree_structure:
+            if x.level == level:
+                level_set.append(x)
+        return level_set
+
+    def common_parent(self, node):        # Common Parent Node Set
+        common_parent_set = []
+        level_set = self.level_set(node.level)  # Level Set
+        for x in level_set:           # ADD SOMETHING TO FACTOR LEVELS IN
+            if x.parent_id == node.parent_id:
+                common_parent_set.append(x)
+        return common_parent_set
+
+    def init_leaf_set(self, node_ids):
+        leaf_data = []
+        for node_id in sorted(node_ids):
+            node = self.tree_structure[node_id]
+            if node.level == self.levels:
+                leaf_data.append(node)
+        return leaf_data
+
+    def parent(self, node):
+        level_set = self.level_set(node.level - 1)  # Level Set
+        for x in level_set:           # ADD SOMETHING TO FACTOR LEVELS IN
+            if x.node_id == node.parent_id:
+                return x
+
     def sampler(self):
         thetas = []                                                         # Initialise theta parameter list
         theta_level = [[] for i in range(self.levels+1)]
@@ -54,7 +95,7 @@ class HINTS():
         thetas.append(self.theta0)                                          # Append initial theta
         for iter in tqdm(range(self.M-1)):                                  # HINTS Iterations
             init_leaf = self.tree.rand_leaf_selection()                     # Random Leaf Selection
-            parent = self.tree.parent(init_leaf)
+            parent = self.tree.parent(init_leaf)                            # Set Parent Node to initial leaf
             for level in reversed(range(0, self.levels+1)):                 # Iterate through levels
                 if level == self.levels:                                    # If level is lowest
                     common_parent_set = self.tree.common_parent(init_leaf)  # Common Parent Set of initial leaf
@@ -77,39 +118,5 @@ class HINTS():
                 else:
                     pass
         self.thetas = thetas
-        self.plot(thetas)
         self.theta_level = theta_level
-        # for i in range(len(theta_level)):
-        #     self.plot(theta_level[i])
-        self.plot(theta_level[0])
 
-    def rand_leaf_selection(self):              # Random Leaf Selection
-        rand_leaf = random.choice(self.leaves)
-        return rand_leaf
-    def level_set(self, level):                 # Level Set
-        level_set = []
-        for x in self.tree_structure:
-            if x.level == level:
-                level_set.append(x)
-        return level_set
-    def common_parent(self, node):        # Common Parent Node Set
-        common_parent_set = []
-        level_set = self.level_set(node.level)  # Level Set
-        for x in level_set:           # ADD SOMETHING TO FACTOR LEVELS IN
-            if x.parent_id == node.parent_id:
-                common_parent_set.append(x)
-
-        return common_parent_set
-    def init_leaf_set(self, node_ids):
-        leaf_data = []
-        for node_id in sorted(node_ids):
-            node = self.tree_structure[node_id]
-            if node.level == self.levels:
-                leaf_data.append(node)
-        return leaf_data
-    def parent(self, node):
-        parentnode = []
-        level_set = self.level_set(node.level - 1)  # Level Set
-        for x in level_set:           # ADD SOMETHING TO FACTOR LEVELS IN
-            if x.node_id == node.parent_id:
-                return x

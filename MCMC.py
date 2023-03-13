@@ -4,13 +4,14 @@ from tqdm import tqdm
 
 class MCMC():
 
-    def __init__(self, x, theta0, target, proposal, stepsize):
+    def __init__(self, x, theta0, target, proposal, M, stepsize):
         self.x = x                          # Data
         self.theta0 = theta0                # Initial Parameter values
         self.logpdf = target.logpdf         # Logpdf of Target
         self.proposal = proposal            # Proposal Method
         self.stepsize = stepsize            # Stepsize
         self.plot = target.plot             # Parameter Plotting
+        self.M = M                          # Number of Iterations
 
     def prop(self, theta):                  # Theta previous parameter, Theta_n proposal parameter
         theta_n = self.proposal(theta, self.stepsize)
@@ -28,10 +29,10 @@ class MCMC():
         else:
             return theta                    # Reject Proposal
 
-    def mcmc(self, M):                                                                         # Test mcmc sampler
+    def mcmc(self):                                                                         # Test mcmc sampler
         thetas = []                                                                         # blank list to save param
         thetas.append(self.theta0)                                                          # add initial param values
-        for i in tqdm(range(M-1)):                                                     # for each iteration:
+        for i in tqdm(range(self.M-1)):                                                     # for each iteration:
             thetan = {}                                                                     # blank dict for the prop
             for j in range(len(self.theta0)):                                               # for each parameter:
                 thetan[j] = self.prop(thetas[i][j])                                         # new proposal for param j
@@ -41,4 +42,3 @@ class MCMC():
                 p[j] = thetan[j]
             thetas.append(p)                                                                # append param val to list
         self.thetas = thetas                                                                # save list
-        self.plot(self.thetas)
